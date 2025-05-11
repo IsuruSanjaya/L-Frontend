@@ -48,18 +48,20 @@ const profileClicksData = [
 ];
 
 const weekdayLeadTimeData = [
-  { name: "Sun", value: 280 },
-  { name: "Mon", value: 450 },
-  { name: "Tue", value: 250 },
-  { name: "Wed", value: 380 },
-  { name: "Thu", value: 320 },
-  { name: "Fri", value: 290 },
-  { name: "Sat", value: 430 },
+  { name: "Sun", value: 285, time: "1h 45m" },
+  { name: "Mon", value: 465, time: "3h 10m" },
+  { name: "Tue", value: 220, time: "1h 20m" },
+  { name: "Wed", value: 420, time: "2h 45m" },
+  { name: "Thu", value: 335, time: "2h 05m" },
+  { name: "Fri", value: 270, time: "1h 50m" },
+  { name: "Sat", value: 480, time: "3h 15m" },
 ];
 
 export default function LawyerStatsDashboard() {
   const [value, setValue] = useState(80);
   const [totalViews, setTotalViews] = useState(400);
+  const [timeframe, setTimeframe] = useState("Last 7 Days");
+  const maxValue = 500;
 
   // Calculate stats
   const percentage = value / 100;
@@ -467,40 +469,55 @@ export default function LawyerStatsDashboard() {
 
             <div className="flex space-x-4 ">
               {/* Average Time by Day */}
-              <div className="flex flex-col p-6 pt-10 mt-4 rounded-xl bg-white shadow border border-blue-800 w-[800px] h-[400px]">
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <h3 className="text-gray-500 text-m font-small">
-                      Average Time From Lead Arrival to First Message
-                    </h3>
-                    <div className="flex items-center mt-2">
-                      <p className="text-2xl font-semibold">2h 15m</p>
-                      <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
-                        +2%
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center ml-6 text-gray-500 text-xs">
-                    Last 7 Days
-                    <Calendar className="w-4 h-4 ml-1" />
-                  </div>
-                </div>
-
-                <div className="space-y-2 mt-4">
-                  {weekdayLeadTimeData.map((day) => (
-                    <div key={day.name} className="flex items-center">
-                      <span className="w-10 text-m text-gray-600">
-                        {day.name}
-                      </span>
-                      <div className="flex-1 ml-1">
-                        <div
-                          className="h-5 bg-indigo-500 rounded"
-                          style={{ width: `${(day.value / 500) * 100}%` }}
-                        ></div>
+              <div className="flex flex-col p-6 pt-8 mt-4 rounded-xl bg-white shadow border border-blue-800 w-[800px] h-[400px]">
+                  <div className="p-2">
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <h3 className="text-gray-500 text-sm font-medium">
+                          Average Time from Lead Arrival to First Message
+                        </h3>
+                        <div className="flex items-center mt-2">
+                          <p className="text-3xl font-bold text-gray-800">
+                            2h 15m
+                          </p>
+                          <div className="ml-3 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-md font-medium">
+                            23%
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center ml-6 text-gray-500 text-xs">
+                        Last 7 Days
+                        <Calendar className="w-4 h-4 ml-1" />
                       </div>
                     </div>
-                  ))}
-                </div>
+
+                    <div className="space-y-2 mt-4">
+                      {weekdayLeadTimeData.map((day) => (
+                        <div key={day.name} className="flex items-center gap-2">
+                          <span className="w-8 text-sm font-medium text-gray-600">
+                            {day.name}
+                          </span>
+                          <div className="flex-1 relative h-5">
+                            <div
+                              className="absolute h-4 bg-blue-700 rounded-md"
+                              style={{
+                                width: `${(day.value / maxValue) * 100}%`,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex justify-between mt-4 text-xs text-gray-500 px-8">
+                      <span>0</span>
+                      <span>100</span>
+                      <span>200</span>
+                      <span>300</span>
+                      <span>400</span>
+                      <span>500</span>
+                    </div>
+                  </div>
               </div>
 
               <div className="flex flex-col items-center p-6 pt-8 mt-4 rounded-xl bg-white shadow w-[480px] h-[400px] border border-blue-800">
@@ -518,7 +535,7 @@ export default function LawyerStatsDashboard() {
                 </div>
 
                 <div className="relative w-full">
-                  <svg width="100%" height="150" viewBox="-100 -90 200 120">
+                  <svg width="420" height="250" viewBox="-100 -90 200 120">
                     {/* Background arc */}
                     {createArc(-90, 180, "#EBEAFF")}
 
