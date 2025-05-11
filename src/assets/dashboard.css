@@ -1,0 +1,11 @@
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0px; /* No space between items */
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+.flex-wrap > * {
+  flex: 0 0 50%; /* Two components per row */
+}

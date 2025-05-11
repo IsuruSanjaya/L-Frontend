@@ -98,442 +98,472 @@ export default function LawyerStatsDashboard() {
 
   // Growth indicator
   const growthPercentage = 23.5;
-  const [activeTab, setActiveTab] = useState("My Statistics");
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
 
       {/* Main Content */}
-      <div className="flex-1">
+      <div className="wrap">
         <main className="p-6">
-          <div className="grid grid-cols-2 gap-6">
-            {/* Average Response Time */}
-            <div className="flex flex-col p-6 rounded-xl bg-white shadow border border-blue-800 w-full h-96">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="text-gray-500 text-sm font-medium">
-                    Average Response Time
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <p className="text-3xl font-bold text-gray-900">2h 15m</p>
-                    <div className="flex items-center px-2 py-1 text-xs font-medium bg-indigo-600 text-white rounded-full">
-                      <ArrowUp className="w-3 h-3 mr-1" />
-                      23.5%
+          <div className="ml-20">
+            <div className="flex space-x-4">
+              {/* Average Response Time */}
+              <div className="flex flex-col p-6 rounded-xl bg-white shadow border border-blue-800 w-[800px] h-[400px]">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="text-gray-500 text-sm font-small">
+                      Average Response Time
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-2xl font-bold text-gray-900">2h 15m</p>
+                      <div className="flex items-center px-2 py-1 text-xs font-medium bg-indigo-600 text-white rounded-full">
+                        <ArrowUp className="w-3 h-3 mr-1" />
+                        23.5%
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center ml-6 text-gray-500 text-xs">
+                    Last 7 Days
+                    <Calendar className="w-4 h-4 ml-1" />
+                  </div>
+                </div>
+
+                <div className="flex-1 mt-6">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart
+                      data={responseTimeData}
+                      margin={{ top: 10, right: 20, bottom: 20, left: 0 }}
+                    >
+                      <defs>
+                        <linearGradient
+                          id="colorGradient2"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="5%"
+                            stopColor="#6366F1"
+                            stopOpacity={0.3}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="#6366F1"
+                            stopOpacity={0}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        vertical={false}
+                        strokeDasharray="6 6"
+                        stroke="#f0f0f0"
+                      />
+                      <XAxis
+                        dataKey="name"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                        dy={10}
+                      />
+                      <YAxis
+                        domain={[0, 5]}
+                        ticks={[1, 2, 3, 4, 5]}
+                        tickFormatter={(value) => `${value}h`}
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                      />
+
+                      {/* Highlight Wednesday */}
+                      <ReferenceArea
+                        x1="Wed"
+                        x2="Wed"
+                        y1={0}
+                        y2={5}
+                        fill="#EEF2FF"
+                      />
+
+                      {/* Line connecting all points */}
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#6366F1"
+                        strokeWidth={3}
+                        dot={{
+                          r: 0,
+                        }}
+                        activeDot={{
+                          r: 6,
+                          fill: "#6366F1",
+                          stroke: "#ffffff",
+                          strokeWidth: 2,
+                        }}
+                      />
+
+                      {/* Reference for Wednesday showing 2h 15m */}
+                      <ReferenceLine
+                        x="Wed"
+                        y={3.25}
+                        stroke="#6366F1"
+                        strokeDasharray="3 3"
+                        label={{
+                          value: "2h 15m",
+                          position: "top",
+                          fill: "#6366F1",
+                          fontSize: 12,
+                          dy: -10,
+                        }}
+                      />
+
+                      {/* Dot for Wednesday - specifically visible */}
+                      <ReferenceDot
+                        x="Wed"
+                        y={3.25}
+                        r={4}
+                        fill="#6366F1"
+                        stroke="#FFFFFF"
+                        strokeWidth={2}
+                      />
+
+                      {/* Bar only for Wednesday */}
+                      <Bar
+                        dataKey={(data) =>
+                          data.name === "Wed" ? data.value : 0
+                        }
+                        barSize={38}
+                        fill="#6366F1"
+                        fillOpacity={0.2}
+                        isAnimationActive={false}
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              {/* Profile Clicks */}
+              <div className="bg-white p-6 rounded-xl shadow border border-blue-600 w-[480px] h-[400px]">
+                <div className="mb-4">
+                  <h3 className="text-gray-500 text-sm mb-2">Profile Clicks</h3>
+                  <div className="flex items-center justify-between">
+                    <p className="text-4xl font-bold text-gray-900">1000</p>
+                    <div className="flex justify-between items-center">
+                      <div className="bg-indigo-600 text-white text-xs font-medium px-3 py-1 rounded-full flex items-center">
+                        <ArrowUp className="w-3 h-2 mr-1" />
+                        23.5%
+                      </div>
+                      <div className="flex items-center ml-6 text-gray-500 text-xs">
+                        Last 7 Days
+                        <Calendar className="w-4 h-4 ml-1" />
+                      </div>
                     </div>
                   </div>
                 </div>
-                <button className="flex items-center text-xs text-gray-500 border border-gray-200 rounded-lg px-3 py-1.5">
-                  Last 7 Days
-                  <svg
-                    className="ml-1 w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
+
+                <div className="h-58 mt-8">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={profileClicksData}
+                      margin={{ top: 5, right: 10, bottom: 5, left: -20 }}
+                    >
+                      <XAxis
+                        dataKey="name"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#6B7280" }}
+                        dy={10}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#6B7280" }}
+                        domain={[0, 250]}
+                        ticks={[50, 100, 150, 200, 250]}
+                      />
+                      <Bar
+                        dataKey="value"
+                        fill="#6366F1"
+                        radius={[4, 4, 0, 0]}
+                        barSize={30}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex space-x-4">
+              {/* Bounce Rate */}
+              <div className="bg-white p-6 pt-8 mt-4 rounded-xl shadow-sm border border-blue-800 w-[480px] h-[400px]">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="text-gray-500 text-m font-small">
+                      Bounce Rate
+                    </h3>
+                    <div className="flex items-center mt-1">
+                      <p className="text-2xl font-semibold">25%</p>
+                      <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                        +1%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center ml-6 text-gray-500 text-xs">
+                    Last 7 Days
+                    <Calendar className="w-4 h-4 ml-1" />
+                  </div>
+                </div>
+
+                <div className="relative h-60 w-60 mx-auto">
+                  <div className="absolute inset-0 rounded-full border-[24px] border-indigo-500 opacity-75"></div>
+                  <div className="absolute inset-0 rounded-full border-[24px] border-t-red-500 border-r-red-500 border-b-transparent border-l-transparent transform rotate-45"></div>
+                </div>
+
+                <div className="flex justify-center gap-6 mt-4">
+                  <div className="flex items-center">
+                    <span className="w-3 h-3 rounded-full bg-indigo-500 mr-2"></span>
+                    <span className="text-xs text-gray-600">Engaged</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+                    <span className="text-xs text-gray-600">No Action</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Average Time from Lead Arrival to First Message */}
+              <div className="flex flex-col p-6 pt-8 mt-4 rounded-xl bg-white shadow border border-blue-800 w-[800px] h-[400px]">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="text-gray-500 text-m font-small">
+                      Average Time from Lead Arrival to First Message
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-2xl font-bold text-gray-900">2h 15m</p>
+                      <div className="flex items-center px-2 py-1 text-xs font-medium bg-indigo-600 text-white rounded-full">
+                        <ArrowUp className="w-3 h-3 mr-1" />
+                        23.5%
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center ml-6 text-gray-500 text-xs">
+                    Last 7 Days
+                    <Calendar className="w-4 h-4 ml-1" />
+                  </div>
+                </div>
+
+                <div className="flex-1 mt-6">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart
+                      data={responseTimeData}
+                      margin={{ top: 10, right: 20, bottom: 20, left: 0 }}
+                    >
+                      <defs>
+                        <linearGradient
+                          id="colorGradient2"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="5%"
+                            stopColor="#6366F1"
+                            stopOpacity={0.3}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="#6366F1"
+                            stopOpacity={0}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        vertical={false}
+                        strokeDasharray="6 6"
+                        stroke="#f0f0f0"
+                      />
+                      <XAxis
+                        dataKey="name"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                        dy={10}
+                      />
+                      <YAxis
+                        domain={[0, 5]}
+                        ticks={[1, 2, 3, 4, 5]}
+                        tickFormatter={(value) => `${value}h`}
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                      />
+
+                      {/* Highlight Wednesday */}
+                      <ReferenceArea
+                        x1="Wed"
+                        x2="Wed"
+                        y1={0}
+                        y2={5}
+                        fill="#EEF2FF"
+                      />
+
+                      {/* Line connecting all points */}
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#6366F1"
+                        strokeWidth={3}
+                        dot={{
+                          r: 0,
+                        }}
+                        activeDot={{
+                          r: 6,
+                          fill: "#6366F1",
+                          stroke: "#ffffff",
+                          strokeWidth: 2,
+                        }}
+                      />
+
+                      {/* Reference for Wednesday showing 2h 15m */}
+                      <ReferenceLine
+                        x="Wed"
+                        y={3.25}
+                        stroke="#6366F1"
+                        strokeDasharray="3 3"
+                        label={{
+                          value: "2h 15m",
+                          position: "top",
+                          fill: "#6366F1",
+                          fontSize: 12,
+                          dy: -10,
+                        }}
+                      />
+
+                      {/* Dot for Wednesday - specifically visible */}
+                      <ReferenceDot
+                        x="Wed"
+                        y={3.25}
+                        r={4}
+                        fill="#6366F1"
+                        stroke="#FFFFFF"
+                        strokeWidth={2}
+                      />
+
+                      {/* Bar only for Wednesday */}
+                      <Bar
+                        dataKey={(data) =>
+                          data.name === "Wed" ? data.value : 0
+                        }
+                        barSize={38}
+                        fill="#6366F1"
+                        fillOpacity={0.2}
+                        isAnimationActive={false}
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex space-x-4 ">
+              {/* Average Time by Day */}
+              <div className="flex flex-col p-6 pt-10 mt-4 rounded-xl bg-white shadow border border-blue-800 w-[800px] h-[400px]">
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h3 className="text-gray-500 text-m font-small">
+                      Average Time From Lead Arrival to First Message
+                    </h3>
+                    <div className="flex items-center mt-2">
+                      <p className="text-2xl font-semibold">2h 15m</p>
+                      <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                        +2%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center ml-6 text-gray-500 text-xs">
+                    Last 7 Days
+                    <Calendar className="w-4 h-4 ml-1" />
+                  </div>
+                </div>
+
+                <div className="space-y-2 mt-4">
+                  {weekdayLeadTimeData.map((day) => (
+                    <div key={day.name} className="flex items-center">
+                      <span className="w-10 text-m text-gray-600">
+                        {day.name}
+                      </span>
+                      <div className="flex-1 ml-1">
+                        <div
+                          className="h-5 bg-indigo-500 rounded"
+                          style={{ width: `${(day.value / 500) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center p-6 pt-8 mt-4 rounded-xl bg-white shadow w-[480px] h-[400px] border border-blue-800">
+                <div className="flex w-full justify-between mb-1 font-switzer">
+                  <h3 className="text-gray-500 text-m font-small">
+                    Profile View to Chat Conversion Rate
+                  </h3>
+                </div>
+
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-3xl font-bold">{value}%</span>
+                  <span className="text-sm font-medium text-blue-600">
+                    {growthPercentage}%
+                  </span>
+                </div>
+
+                <div className="relative w-full">
+                  <svg width="100%" height="150" viewBox="-100 -90 200 120">
+                    {/* Background arc */}
+                    {createArc(-90, 180, "#EBEAFF")}
+
+                    {/* Colored segments - using the purple color from the image */}
+                    {createArc(-90, 0, "#C5BAFF")}
+                    {createArc(-90, 0, "#C5BAFF")}
+                    {createArc(-120, angle, "#C5BAFF")}
+
+                    {/* Needle */}
+                    <line
+                      x1="0"
+                      y1="0"
+                      x2={x * 0.8}
+                      y2={y * 0.8}
+                      stroke="#1F2937"
+                      strokeWidth="3"
                       strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M8 9l4-4 4 4m0 6l-4 4-4-4"
                     />
+                    <circle cx="0" cy="0" r="4" fill="#1F2937" />
+
+                    {/* Central value */}
+                    <text
+                      x="0"
+                      y="20"
+                      fontSize="18"
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      fill="#1F2937"
+                    >
+                      {totalViews}
+                    </text>
+                    <text
+                      x="0"
+                      y="30"
+                      fontSize="11"
+                      textAnchor="middle"
+                      fill="#1F2937"
+                    >
+                      Views
+                    </text>
                   </svg>
-                </button>
-              </div>
-
-              <div className="flex-1 mt-6">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart
-                    data={responseTimeData}
-                    margin={{ top: 10, right: 20, bottom: 20, left: 0 }}
-                  >
-                    <defs>
-                      <linearGradient
-                        id="colorGradient"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="#6366F1"
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#6366F1"
-                          stopOpacity={0}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid
-                      vertical={false}
-                      strokeDasharray="6 6"
-                      stroke="#f0f0f0"
-                    />
-                    <XAxis
-                      dataKey="name"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#9CA3AF" }}
-                      dy={10}
-                    />
-                    <YAxis
-                      domain={[0, 5]}
-                      ticks={[1, 2, 3, 4, 5]}
-                      tickFormatter={(value) => `${value}h`}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#9CA3AF" }}
-                    />
-
-                    {/* Highlight Wednesday */}
-                    <ReferenceArea
-                      x1="Wed"
-                      x2="Wed"
-                      y1={0}
-                      y2={5}
-                      fill="#EEF2FF"
-                    />
-
-                    {/* Bar chart for each data point */}
-                    <Bar
-                      dataKey="value"
-                      barSize={24}
-                      fill="#6366F1"
-                      fillOpacity={0.3}
-                      isAnimationActive={false}
-                    />
-
-                    {/* Line connecting all points */}
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#6366F1"
-                      strokeWidth={3}
-                      dot={false}
-                      activeDot={{
-                        r: 6,
-                        fill: "#6366F1",
-                        stroke: "#ffffff",
-                        strokeWidth: 2,
-                      }}
-                    />
-
-                    {/* Reference for Wednesday showing 3h 15m */}
-                    <ReferenceLine
-                      x="Wed"
-                      y={3.25}
-                      stroke="#6366F1"
-                      strokeDasharray="3 3"
-                      label={{
-                        value: "3h 15m",
-                        position: "top",
-                        fill: "#6366F1",
-                        fontSize: 12,
-                        dy: -10,
-                      }}
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-            {/* Profile Clicks */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-800">
-              <div className="flex justify-between items-center mb-2">
-                <div>
-                  <h3 className="text-lg text-gray-600">Profile Clicks</h3>
-                  <div className="flex items-center mt-1">
-                    <p className="text-2xl font-semibold">1000</p>
-                    <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
-                      +1%
-                    </span>
-                  </div>
                 </div>
-                <button className="text-xs text-gray-400 hover:text-gray-600">
-                  Last 7 Days
-                </button>
-              </div>
 
-              <div className="h-40 mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={profileClicksData}>
-                    <XAxis
-                      dataKey="name"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#9CA3AF" }}
-                    />
-                    <Bar dataKey="value" fill="#4F46E5" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Bounce Rate */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-800">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h3 className="text-lg text-gray-600">Bounce Rate</h3>
-                  <div className="flex items-center mt-1">
-                    <p className="text-2xl font-semibold">25%</p>
-                    <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
-                      +1%
-                    </span>
-                  </div>
-                </div>
-                <button className="text-xs text-gray-400 hover:text-gray-600">
-                  Last 7 Days
-                </button>
-              </div>
-
-              <div className="relative h-48 w-48 mx-auto">
-                <div className="absolute inset-0 rounded-full border-[24px] border-indigo-500 opacity-75"></div>
-                <div className="absolute inset-0 rounded-full border-[24px] border-t-red-500 border-r-red-500 border-b-transparent border-l-transparent transform rotate-45"></div>
-              </div>
-
-              <div className="flex justify-center gap-6 mt-4">
-                <div className="flex items-center">
-                  <span className="w-3 h-3 rounded-full bg-indigo-500 mr-2"></span>
-                  <span className="text-xs text-gray-600">Engaged</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
-                  <span className="text-xs text-gray-600">No Action</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Average Time from Lead Arrival to First Message */}
-            <div className="flex flex-col p-6 rounded-xl bg-white shadow border border-blue-800 w-full h-96">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="text-gray-500 text-sm font-medium">
-                    Average Response Time
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <p className="text-3xl font-bold text-gray-900">2h 15m</p>
-                    <div className="flex items-center px-2 py-1 text-xs font-medium bg-indigo-600 text-white rounded-full">
-                      <ArrowUp className="w-3 h-3 mr-1" />
-                      23.5%
-                    </div>
-                  </div>
-                </div>
-                <button className="flex items-center text-xs text-gray-500 border border-gray-200 rounded-lg px-3 py-1.5">
-                  Last 7 Days
-                  <svg
-                    className="ml-1 w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M8 9l4-4 4 4m0 6l-4 4-4-4"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="flex-1 mt-6">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart
-                    data={responseTimeData}
-                    margin={{ top: 10, right: 20, bottom: 20, left: 0 }}
-                  >
-                    <defs>
-                      <linearGradient
-                        id="colorGradient"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="#6366F1"
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#6366F1"
-                          stopOpacity={0}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid
-                      vertical={false}
-                      strokeDasharray="6 6"
-                      stroke="#f0f0f0"
-                    />
-                    <XAxis
-                      dataKey="name"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#9CA3AF" }}
-                      dy={10}
-                    />
-                    <YAxis
-                      domain={[0, 5]}
-                      ticks={[1, 2, 3, 4, 5]}
-                      tickFormatter={(value) => `${value}h`}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#9CA3AF" }}
-                    />
-
-                    {/* Highlight Wednesday */}
-                    <ReferenceArea
-                      x1="Wed"
-                      x2="Wed"
-                      y1={0}
-                      y2={5}
-                      fill="#EEF2FF"
-                    />
-
-                    {/* Bar chart for each data point */}
-                    <Bar
-                      dataKey="value"
-                      barSize={24}
-                      fill="#6366F1"
-                      fillOpacity={0.3}
-                      isAnimationActive={false}
-                    />
-
-                    {/* Line connecting all points */}
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#6366F1"
-                      strokeWidth={3}
-                      dot={false}
-                      activeDot={{
-                        r: 6,
-                        fill: "#6366F1",
-                        stroke: "#ffffff",
-                        strokeWidth: 2,
-                      }}
-                    />
-
-                    {/* Reference for Wednesday showing 3h 15m */}
-                    <ReferenceLine
-                      x="Wed"
-                      y={3.25}
-                      stroke="#6366F1"
-                      strokeDasharray="3 3"
-                      label={{
-                        value: "2h 15m",
-                        position: "top",
-                        fill: "#6366F1",
-                        fontSize: 12,
-                        dy: -10,
-                      }}
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Average Time by Day */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-800">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h3 className="text-lg text-gray-600">
-                    Average Time From Lead Arrival to First Message
-                  </h3>
-                  <div className="flex items-center mt-1">
-                    <p className="text-2xl font-semibold">2h 15m</p>
-                    <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
-                      +2%
-                    </span>
-                  </div>
-                </div>
-                <button className="text-xs text-gray-400 hover:text-gray-600">
-                  Last 7 Days
-                </button>
-              </div>
-
-              <div className="space-y-3 mt-4">
-                {weekdayLeadTimeData.map((day) => (
-                  <div key={day.name} className="flex items-center">
-                    <span className="w-12 text-xs text-gray-600">
-                      {day.name}
-                    </span>
-                    <div className="flex-1 ml-4">
-                      <div
-                        className="h-4 bg-indigo-500 rounded"
-                        style={{ width: `${(day.value / 500) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center p-6 rounded-xl bg-white shadow w-full max-w-md border border-blue-800">
-              <div className="flex w-full justify-between mb-1 font-switzer">
-                <h3 className="text-lg text-gray-600">
-                  Profile View to Chat Conversion Rate
-                </h3>
-              </div>
-
-              <div className="flex w-full items-center justify-between">
-                <span className="text-3xl font-bold">{value}%</span>
-                <span className="text-sm font-medium text-blue-600">
-                  {growthPercentage}%
-                </span>
-              </div>
-
-              <div className="relative w-full">
-                <svg width="100%" height="150" viewBox="-100 -90 200 120">
-                  {/* Background arc */}
-                  {createArc(-90, 180, "#EBEAFF")}
-
-                  {/* Colored segments - using the purple color from the image */}
-                  {createArc(-90, 0, "#C5BAFF")}
-                  {createArc(-90, 0, "#C5BAFF")}
-                  {createArc(-120, angle, "#C5BAFF")}
-
-                  {/* Needle */}
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2={x * 0.8}
-                    y2={y * 0.8}
-                    stroke="#1F2937"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                  />
-                  <circle cx="0" cy="0" r="4" fill="#1F2937" />
-
-                  {/* Central value */}
-                  <text
-                    x="0"
-                    y="20"
-                    fontSize="18"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                    fill="#1F2937"
-                  >
-                    {totalViews}
-                  </text>
-                  <text
-                    x="0"
-                    y="30"
-                    fontSize="11"
-                    textAnchor="middle"
-                    fill="#1F2937"
-                  >
-                    Views
-                  </text>
-                </svg>
-              </div>
-
-              {/* Stats display */}
-              {/* <div className="flex w-full justify-between mt-6 text-center">
+                {/* Stats display */}
+                {/* <div className="flex w-full justify-between mt-6 text-center">
                 <div>
                   <p className="text-lg font-bold">{totalViews}</p>
                   <p className="text-xs text-gray-500">Profile Views</p>
@@ -543,13 +573,16 @@ export default function LawyerStatsDashboard() {
                   <p className="text-xs text-gray-500">Chats Started</p>
                 </div>
               </div> */}
+              </div>
             </div>
 
             {/* Last Post Published */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-800">
+            <div className="bg-white p-6 pt-10 mt-4 rounded-lg shadow-sm border border-blue-800 w-[480px] h-[150px]">
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <h3 className="text-lg text-gray-600">Last Post Published</h3>
+                  <h3 className="text-gray-500 text-m font-small">
+                    Last Post Published
+                  </h3>
                   <p className="text-xl font-semibold mt-2">April 23, 2025</p>
                 </div>
                 <span className="px-2 py-1 text-xs bg-indigo-100 text-indigo-800 rounded">
@@ -563,3 +596,18 @@ export default function LawyerStatsDashboard() {
     </div>
   );
 }
+// Helper component for the dot at specific point
+const ReferenceDot = ({ x, y, r, fill, stroke, strokeWidth }) => {
+  return (
+    <svg>
+      <circle
+        cx={x}
+        cy={y}
+        r={r}
+        fill={fill}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+      />
+    </svg>
+  );
+};
