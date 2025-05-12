@@ -25,6 +25,7 @@ import {
   ChevronDown,
   Bell,
   Info,
+  IndentIncrease,
 } from "lucide-react";
 import { ArrowUp } from "lucide-react";
 
@@ -60,7 +61,6 @@ const weekdayLeadTimeData = [
 export default function LawyerStatsDashboard() {
   const [value, setValue] = useState(80);
   const [totalViews, setTotalViews] = useState(400);
-  const [timeframe, setTimeframe] = useState("Last 7 Days");
   const maxValue = 500;
 
   // Calculate stats
@@ -111,63 +111,57 @@ export default function LawyerStatsDashboard() {
           <div className="ml-20">
             <div className="flex space-x-4">
               {/* Average Response Time */}
-              <div className="flex flex-col p-6 rounded-xl bg-white shadow border border-blue-800 w-[800px] h-[400px]">
-                <div className="flex justify-between items-start mb-2">
+              <div className="bg-white rounded-2xl p-6 w-full max-w-[800px] h-[400px] relative border border-blue-600">
+                <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-gray-500 text-sm font-small">
+                    <p className="text-gray-500 text-sm">
                       Average Response Time
-                    </h3>
+                    </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <p className="text-2xl font-bold text-gray-900">2h 15m</p>
-                      <div className="flex items-center px-2 py-1 text-xs font-medium bg-indigo-600 text-white rounded-full">
-                        <ArrowUp className="w-3 h-3 mr-1" />
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        2h 15m
+                      </h2>
+                      <div className="flex items-center px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-4"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                          />
+                        </svg>
                         23.5%
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center ml-6 text-gray-500 text-xs">
+                  <div className="flex items-center ml-6 text-gray-800 text-xs border border-gray-200 px-2 py-2 rounded">
                     Last 7 Days
-                    <Calendar className="w-4 h-4 ml-1" />
+                    <Calendar className="w-4 h-4 ml-1 text-gray-500" />
                   </div>
                 </div>
 
-                <div className="flex-1 mt-6">
+                <div className="w-full h-[280px] relative">
                   <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart
+                    <LineChart
                       data={responseTimeData}
-                      margin={{ top: 10, right: 20, bottom: 20, left: 0 }}
+                      margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
                     >
-                      <defs>
-                        <linearGradient
-                          id="colorGradient2"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#6366F1"
-                            stopOpacity={0.3}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#6366F1"
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                      </defs>
                       <CartesianGrid
                         vertical={false}
-                        strokeDasharray="6 6"
                         stroke="#f0f0f0"
+                        strokeDasharray="6 6"
                       />
                       <XAxis
                         dataKey="name"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 12, fill: "#9CA3AF" }}
-                        dy={10}
+                        tick={{ fill: "#9CA3AF", fontSize: 12 }}
                       />
                       <YAxis
                         domain={[0, 5]}
@@ -175,88 +169,121 @@ export default function LawyerStatsDashboard() {
                         tickFormatter={(value) => `${value}h`}
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                        tick={{ fill: "#9CA3AF", fontSize: 12 }}
                       />
-
-                      {/* Highlight Wednesday */}
-                      <ReferenceArea
-                        x1="Wed"
-                        x2="Wed"
-                        y1={0}
-                        y2={5}
-                        fill="#EEF2FF"
-                      />
-
-                      {/* Line connecting all points */}
                       <Line
                         type="monotone"
                         dataKey="value"
                         stroke="#6366F1"
                         strokeWidth={3}
-                        dot={{
-                          r: 0,
-                        }}
+                        dot={false}
                         activeDot={{
-                          r: 6,
+                          r: 8,
                           fill: "#6366F1",
-                          stroke: "#ffffff",
+                          stroke: "white",
                           strokeWidth: 2,
                         }}
                       />
-
-                      {/* Reference for Wednesday showing 2h 15m */}
-                      <ReferenceLine
-                        x="Wed"
-                        y={3.25}
-                        stroke="#6366F1"
-                        strokeDasharray="3 3"
-                        label={{
-                          value: "2h 15m",
-                          position: "top",
-                          fill: "#6366F1",
-                          fontSize: 12,
-                          dy: -10,
-                        }}
-                      />
-
-                      {/* Dot for Wednesday - specifically visible */}
-                      <ReferenceDot
-                        x="Wed"
-                        y={3.25}
-                        r={4}
-                        fill="#6366F1"
-                        stroke="#FFFFFF"
-                        strokeWidth={2}
-                      />
-
-                      {/* Bar only for Wednesday */}
-                      <Bar
-                        dataKey={(data) =>
-                          data.name === "Wed" ? data.value : 0
-                        }
-                        barSize={38}
-                        fill="#6366F1"
-                        fillOpacity={0.2}
-                        isAnimationActive={false}
-                      />
-                    </ComposedChart>
+                    </LineChart>
                   </ResponsiveContainer>
+
+                  {/* Wednesday Highlight */}
+                  <div
+                    className="absolute"
+                    style={{
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  >
+                    {/* Dotted Line */}
+                    <div
+                      className="absolute w-0 border-l-2 border-dashed border-[#5D5FEF]"
+                      style={{
+                        height: "109px", // Same height as the bar
+                        left: "50%",
+                        top: "-10px",
+                        transform: "translateX(-50%)",
+                        borderColor: "#5D5FEF",
+                      }}
+                    />
+                    {/* Bar Background */}
+                    <div
+                      className="absolute w-10 bg-indigo-600 bg-opacity-10"
+                      style={{
+                        height: "100px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        borderRadius: "5px",
+                        background: "linear-gradient(to bottom,white, #5D5FEF)",
+                        opacity: 0.3,
+                      }}
+                    />
+
+                    {/* Highlighted Bar Section */}
+                    {/* Highlighted Bar Section */}
+                    <div
+                      className="absolute w-10 bg-indigo-600 bg-opacity-20"
+                      style={{
+                        height: "100px",
+                        bottom: "0",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        borderRadius: "5px",
+                        background: "linear-gradient(to bottom, #5D5FEF)",
+                        opacity: 0.8,
+                      }}
+                    />
+
+                    {/* Overlay Tag */}
+                    <div
+                      className="bg-white rounded-lg px-4 py-2 width-  "
+                      style={{
+                        top: "-80px",
+                        transform: "translateX(0%)",
+                      }}
+                    >
+                      <div className="text-[#5D5FEF] text-base font-semibold">
+                        2h 15m
+                      </div>
+                      <div className="text-gray-400 text-xs">Average</div>
+                    </div>
+                  </div>
                 </div>
               </div>
               {/* Profile Clicks */}
-              <div className="bg-white p-6 rounded-xl shadow border border-blue-600 w-[480px] h-[400px]">
+              <div className="bg-white p-6 rounded-xl  border border-blue-600 w-[480px] h-[400px]">
                 <div className="mb-4">
-                  <h3 className="text-gray-500 text-sm mb-2">Profile Clicks</h3>
                   <div className="flex items-center justify-between">
-                    <p className="text-4xl font-bold text-gray-900">1000</p>
-                    <div className="flex justify-between items-center">
-                      <div className="bg-indigo-600 text-white text-xs font-medium px-3 py-1 rounded-full flex items-center">
-                        <ArrowUp className="w-3 h-2 mr-1" />
-                        23.5%
+                    <div>
+                      <p className="text-gray-500 text-sm">Profile Clicks</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <h2 className="text-2xl font-bold text-gray-900">
+                          1000
+                        </h2>
+                        <div className="flex items-center px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="size-4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                            />
+                          </svg>
+                          23.5%
+                        </div>
                       </div>
-                      <div className="flex items-center ml-6 text-gray-500 text-xs">
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center ml-6 text-gray-800 text-xs border border-gray-200 px-2 py-2 rounded">
                         Last 7 Days
-                        <Calendar className="w-4 h-4 ml-1" />
+                        <Calendar className="w-4 h-4 ml-1 text-gray-500" />
                       </div>
                     </div>
                   </div>
@@ -296,22 +323,36 @@ export default function LawyerStatsDashboard() {
 
             <div className="flex space-x-4">
               {/* Bounce Rate */}
-              <div className="bg-white p-6 pt-8 mt-4 rounded-xl shadow-sm border border-blue-800 w-[480px] h-[400px]">
+              <div className="bg-white p-6 pt-8 mt-4 rounded-xl border border-blue-800 w-[480px] h-[400px]">
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <h3 className="text-gray-500 text-m font-small">
-                      Bounce Rate
-                    </h3>
-                    <div className="flex items-center mt-1">
-                      <p className="text-2xl font-semibold">25%</p>
-                      <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
-                        +1%
-                      </span>
+                    <p className="text-gray-500 text-sm">Bounce Rate</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        2h 15m
+                      </h2>
+                      <div className="flex items-center px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-4"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                          />
+                        </svg>
+                        23.5%
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center ml-6 text-gray-500 text-xs">
+                  <div className="flex items-center ml-6 text-gray-800 text-xs border border-gray-200 px-2 py-2 rounded">
                     Last 7 Days
-                    <Calendar className="w-4 h-4 ml-1" />
+                    <Calendar className="w-4 h-4 ml-1 text-gray-500" />
                   </div>
                 </div>
 
@@ -333,63 +374,57 @@ export default function LawyerStatsDashboard() {
               </div>
 
               {/* Average Time from Lead Arrival to First Message */}
-              <div className="flex flex-col p-6 pt-8 mt-4 rounded-xl bg-white shadow border border-blue-800 w-[800px] h-[400px]">
-                <div className="flex justify-between items-start mb-2">
+              <div className="bg-white rounded-2xl  p-6 mt-4 w-full max-w-[800px] h-[400px] relative border border-blue-600">
+                <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-gray-500 text-m font-small">
+                    <p className="text-gray-500 text-sm">
                       Average Time from Lead Arrival to First Message
-                    </h3>
+                    </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <p className="text-2xl font-bold text-gray-900">2h 15m</p>
-                      <div className="flex items-center px-2 py-1 text-xs font-medium bg-indigo-600 text-white rounded-full">
-                        <ArrowUp className="w-3 h-3 mr-1" />
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        2h 15m
+                      </h2>
+                      <div className="flex items-center px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-4"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                          />
+                        </svg>
                         23.5%
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center ml-6 text-gray-500 text-xs">
+                  <div className="flex items-center ml-6 text-gray-800 text-xs border border-gray-200 px-2 py-2 rounded">
                     Last 7 Days
-                    <Calendar className="w-4 h-4 ml-1" />
+                    <Calendar className="w-4 h-4 ml-1 text-gray-500" />
                   </div>
                 </div>
 
-                <div className="flex-1 mt-6">
+                <div className="w-full h-[280px] relative">
                   <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart
+                    <LineChart
                       data={responseTimeData}
-                      margin={{ top: 10, right: 20, bottom: 20, left: 0 }}
+                      margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
                     >
-                      <defs>
-                        <linearGradient
-                          id="colorGradient2"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#6366F1"
-                            stopOpacity={0.3}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#6366F1"
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                      </defs>
                       <CartesianGrid
                         vertical={false}
-                        strokeDasharray="6 6"
                         stroke="#f0f0f0"
+                        strokeDasharray="6 6"
                       />
                       <XAxis
                         dataKey="name"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 12, fill: "#9CA3AF" }}
-                        dy={10}
+                        tick={{ fill: "#9CA3AF", fontSize: 12 }}
                       />
                       <YAxis
                         domain={[0, 5]}
@@ -397,141 +432,182 @@ export default function LawyerStatsDashboard() {
                         tickFormatter={(value) => `${value}h`}
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                        tick={{ fill: "#9CA3AF", fontSize: 12 }}
                       />
-
-                      {/* Highlight Wednesday */}
-                      <ReferenceArea
-                        x1="Wed"
-                        x2="Wed"
-                        y1={0}
-                        y2={5}
-                        fill="#EEF2FF"
-                      />
-
-                      {/* Line connecting all points */}
                       <Line
                         type="monotone"
                         dataKey="value"
                         stroke="#6366F1"
                         strokeWidth={3}
-                        dot={{
-                          r: 0,
-                        }}
+                        dot={false}
                         activeDot={{
-                          r: 6,
+                          r: 8,
                           fill: "#6366F1",
-                          stroke: "#ffffff",
+                          stroke: "white",
                           strokeWidth: 2,
                         }}
                       />
-
-                      {/* Reference for Wednesday showing 2h 15m */}
-                      <ReferenceLine
-                        x="Wed"
-                        y={3.25}
-                        stroke="#6366F1"
-                        strokeDasharray="3 3"
-                        label={{
-                          value: "2h 15m",
-                          position: "top",
-                          fill: "#6366F1",
-                          fontSize: 12,
-                          dy: -10,
-                        }}
-                      />
-
-                      {/* Dot for Wednesday - specifically visible */}
-                      <ReferenceDot
-                        x="Wed"
-                        y={3.25}
-                        r={4}
-                        fill="#6366F1"
-                        stroke="#FFFFFF"
-                        strokeWidth={2}
-                      />
-
-                      {/* Bar only for Wednesday */}
-                      <Bar
-                        dataKey={(data) =>
-                          data.name === "Wed" ? data.value : 0
-                        }
-                        barSize={38}
-                        fill="#6366F1"
-                        fillOpacity={0.2}
-                        isAnimationActive={false}
-                      />
-                    </ComposedChart>
+                    </LineChart>
                   </ResponsiveContainer>
+
+                  {/* Wednesday Highlight */}
+                  <div
+                    className="absolute"
+                    style={{
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  >
+                    {/* Dotted Line */}
+                    <div
+                      className="absolute w-0 border-l-2 border-dashed border-[#5D5FEF]"
+                      style={{
+                        height: "109px", // Same height as the bar
+                        left: "50%",
+                        top: "-10px",
+                        transform: "translateX(-50%)",
+                        borderColor: "#5D5FEF",
+                      }}
+                    />
+                    {/* Bar Background */}
+                    <div
+                      className="absolute w-10 bg-indigo-600 bg-opacity-10"
+                      style={{
+                        height: "100px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        borderRadius: "5px",
+                        background: "linear-gradient(to bottom,white, #5D5FEF)",
+                        opacity: 0.3,
+                      }}
+                    />
+
+                    {/* Highlighted Bar Section */}
+                    {/* Highlighted Bar Section */}
+                    <div
+                      className="absolute w-10 bg-indigo-600 bg-opacity-20"
+                      style={{
+                        height: "100px",
+                        bottom: "0",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        borderRadius: "5px",
+                        background: "linear-gradient(to bottom, #5D5FEF)",
+                        opacity: 0.8,
+                      }}
+                    />
+
+                    {/* Overlay Tag */}
+                    <div
+                      className="bg-white rounded-lg px-4 py-2 width-  "
+                      style={{
+                        top: "-80px",
+                        transform: "translateX(0%)",
+                      }}
+                    >
+                      <div className="text-[#5D5FEF] text-base font-semibold">
+                        2h 15m
+                      </div>
+                      <div className="text-gray-400 text-xs">Average</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="flex space-x-4 ">
               {/* Average Time by Day */}
-              <div className="flex flex-col p-6 pt-8 mt-4 rounded-xl bg-white shadow border border-blue-800 w-[800px] h-[400px]">
-                  <div className="p-2">
-                    <div className="flex justify-between items-center mb-4">
-                      <div>
-                        <h3 className="text-gray-500 text-sm font-medium">
-                          Average Time from Lead Arrival to First Message
-                        </h3>
-                        <div className="flex items-center mt-2">
-                          <p className="text-3xl font-bold text-gray-800">
-                            2h 15m
-                          </p>
-                          <div className="ml-3 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-md font-medium">
-                            23%
-                          </div>
-                        </div>
+              <div className="flex flex-col p-6 pt-8 mt-4 rounded-xl bg-white  border border-blue-800 w-[800px] h-[400px]">
+                <div className="p-2">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h3 className="text-gray-500 text-sm font-small">
+                        Average Time from Lead Arrival to First Message
+                      </h3>
+                      <div className="flex items-center mt-2">
+                        <p className="text-[23px] font-bold text-gray-800">
+                          2h 15m
+                        </p>
+                        <div className="flex items-center px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-4"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                          />
+                        </svg>
+                        23.5%
                       </div>
-                      <div className="flex items-center ml-6 text-gray-500 text-xs">
-                        Last 7 Days
-                        <Calendar className="w-4 h-4 ml-1" />
                       </div>
                     </div>
-
-                    <div className="space-y-2 mt-4">
-                      {weekdayLeadTimeData.map((day) => (
-                        <div key={day.name} className="flex items-center gap-2">
-                          <span className="w-8 text-sm font-medium text-gray-600">
-                            {day.name}
-                          </span>
-                          <div className="flex-1 relative h-5">
-                            <div
-                              className="absolute h-4 bg-blue-700 rounded-md"
-                              style={{
-                                width: `${(day.value / maxValue) * 100}%`,
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex justify-between mt-4 text-xs text-gray-500 px-8">
-                      <span>0</span>
-                      <span>100</span>
-                      <span>200</span>
-                      <span>300</span>
-                      <span>400</span>
-                      <span>500</span>
-                    </div>
+                    <div className="flex items-center ml-6 text-gray-800 text-xs border border-gray-200 px-2 py-2 rounded">
+                    Last 7 Days
+                    <Calendar className="w-4 h-4 ml-1 text-gray-500" />
                   </div>
+                  </div>
+
+                  <div className="space-y-3 mt-5">
+                    {weekdayLeadTimeData.map((day) => (
+                      <div key={day.name} className="flex items-center gap-2">
+                        <span className="w-8 text-sm font-medium text-gray-500">
+                          {day.name}
+                        </span>
+                        <div className="flex-1 relative h-5">
+                          <div
+                            className="absolute h-5 bg-[#5D5FEF] rounded-md"
+                            style={{
+                              width: `${(day.value / maxValue) * 100}%`,
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between mt-4 text-xs text-gray-500 px-8">
+                    <span>0</span>
+                    <span>100</span>
+                    <span>200</span>
+                    <span>300</span>
+                    <span>400</span>
+                    <span>500</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-col items-center p-6 pt-8 mt-4 rounded-xl bg-white shadow w-[480px] h-[400px] border border-blue-800">
-                <div className="flex w-full justify-between mb-1 font-switzer">
-                  <h3 className="text-gray-500 text-m font-small">
+              <div className="bg-white p-6 pt-10 mt-4 rounded-lg  border border-blue-800 w-[480px] h-[400px]">
+                <div>
+                  <p className="text-gray-500 text-sm">
                     Profile View to Chat Conversion Rate
-                  </h3>
-                </div>
-
-                <div className="flex w-full items-center justify-between">
-                  <span className="text-3xl font-bold">{value}%</span>
-                  <span className="text-sm font-medium text-blue-600">
-                    {growthPercentage}%
-                  </span>
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <h2 className="text-[23px] font-bold text-gray-900">85%</h2>
+                    <div className="flex items-center px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-4"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                        />
+                      </svg>
+                      23.5%
+                    </div>
+                  </div>
                 </div>
 
                 <div className="relative w-full">
@@ -540,9 +616,9 @@ export default function LawyerStatsDashboard() {
                     {createArc(-90, 180, "#EBEAFF")}
 
                     {/* Colored segments - using the purple color from the image */}
-                    {createArc(-90, 0, "#C5BAFF")}
-                    {createArc(-90, 0, "#C5BAFF")}
-                    {createArc(-120, angle, "#C5BAFF")}
+                    {createArc(-90, 0, "#5D5FEF")}
+                    {createArc(-90, 0, "#5D5FEF")}
+                    {createArc(-120, angle, "#5D5FEF")}
 
                     {/* Needle */}
                     <line
@@ -594,17 +670,31 @@ export default function LawyerStatsDashboard() {
             </div>
 
             {/* Last Post Published */}
-            <div className="bg-white p-6 pt-10 mt-4 rounded-lg shadow-sm border border-blue-800 w-[480px] h-[150px]">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h3 className="text-gray-500 text-m font-small">
-                    Last Post Published
-                  </h3>
-                  <p className="text-xl font-semibold mt-2">April 23, 2025</p>
+            <div className="bg-white p-6 pt-10 mt-4 rounded-lg  border border-blue-800 w-[480px] h-[150px]">
+              <div>
+                <p className="text-gray-500 text-sm">Last Blog Published</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    April 23,2025
+                  </h2>
+                  <div className="flex items-center px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-4"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                      />
+                    </svg>
+                    23.5%
+                  </div>
                 </div>
-                <span className="px-2 py-1 text-xs bg-indigo-100 text-indigo-800 rounded">
-                  Blawg
-                </span>
               </div>
             </div>
           </div>
