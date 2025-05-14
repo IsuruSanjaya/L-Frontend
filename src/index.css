@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+body {
+  font-family: 'General Sans', sans-serif;
+  height: 100%;
+  width: 100%;
+
+}
+
+/* Adjust layout for mobile screens */
+@media (max-width: 768px) {
+  .container {
+    padding: 0;  /* Remove padding on smaller screens */
+  }
+  .content {
+    width: 100%; /* Make content width adjust to full width */
+  }
+}
+/* Add any additional content-specific styles */
+
+/* Full-screen container */
+.container {
+  display: flex;
+  justify-content: center; /* Center content horizontally */
+  align-items: center;     /* Center content vertically */
+  width: 100%;             /* Full width */
+  padding: 10px;           /* Optional padding */
+  box-sizing: border-box;
+}
