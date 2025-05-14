@@ -102,14 +102,15 @@ export default function LawyerStatsDashboard() {
   const growthPercentage = 23.5;
 
   return (
-    <div className="w-[100%]">
+    <div className="w-full">
       {/* Main Content */}
-      <main className="p-5 ">
-        <div className="">
-          <div className="flex space-x-4">
+      <main className="p-2 md:p-5">
+        <div className="w-full">
+          {/* First Row */}
+          <div className="flex flex-col lg:flex-row gap-4">
             {/* Average Response Time */}
-            <div className="bg-white rounded-2xl  p-6  w-[645px] h-[386px] relative border border-blue-600">
-              <div className="flex justify-between items-start mb-2">
+            <div className="bg-white rounded-2xl p-4 md:p-6 w-full lg:w-[645px] h-auto md:h-[386px] relative border border-blue-600">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
                 <div>
                   <p className="text-[#718096] text-[13.66px]">
                     Average Response Time
@@ -137,13 +138,13 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                <div className="flex items-center mt-2 sm:mt-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                   Last 7 Days
                   <Calendar className="w-4 h-4 ml-1 text-gray-400" />
                 </div>
               </div>
 
-              <div className="w-full h-[283px] relative">
+              <div className="w-full h-[200px] md:h-[283px] relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={responseTimeData}
@@ -186,7 +187,7 @@ export default function LawyerStatsDashboard() {
 
                 {/* Wednesday Highlight */}
                 <div
-                  className="absolute"
+                  className="absolute hidden md:block"
                   style={{
                     top: "45%",
                     left: "50%",
@@ -207,7 +208,7 @@ export default function LawyerStatsDashboard() {
                   />
                   {/* Bar Background */}
                   <div
-                    className="absolute w-10 bg-#5D5FEF bg-opacity-10"
+                    className="absolute w-10 bg-opacity-10"
                     style={{
                       height: "135px",
                       width: "43px",
@@ -221,7 +222,7 @@ export default function LawyerStatsDashboard() {
 
                   {/* Highlighted Bar Section */}
                   <div
-                    className="absolute w-10 bg-#5D5FEF bg-opacity-20"
+                    className="absolute w-10 bg-opacity-20"
                     style={{
                       height: "100px",
                       bottom: "0",
@@ -235,7 +236,7 @@ export default function LawyerStatsDashboard() {
 
                   {/* Overlay Tag */}
                   <div
-                    className="bg-white rounded-lg px-4 py-2 z-50 "
+                    className="bg-white rounded-lg px-4 py-2 z-50"
                     style={{
                       top: "50px",
                       transform: "translateX(0%)",
@@ -251,9 +252,9 @@ export default function LawyerStatsDashboard() {
               </div>
             </div>
             {/* Profile Clicks */}
-            <div className="bg-white p-6 rounded-xl  border border-blue-600 w-full sm:w-1/2 lg:w-[377px] h-[386px]">
+            <div className="bg-white p-4 md:p-6 rounded-xl border border-blue-600 w-full lg:w-[377px] h-auto md:h-[386px] mt-4 lg:mt-0">
               <div className="mb-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-[#718096] text-[13.66px]">
                       Profile Clicks
@@ -281,8 +282,8 @@ export default function LawyerStatsDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                  <div className="flex justify-between items-center mt-2 sm:mt-0">
+                    <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                       Last 7 Days
                       <Calendar className="w-4 h-4 ml-1 text-gray-400" />
                     </div>
@@ -290,7 +291,7 @@ export default function LawyerStatsDashboard() {
                 </div>
               </div>
 
-              <div className="h-58 mt-8">
+              <div className="h-48 md:h-58 mt-8">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={profileClicksData}
@@ -322,65 +323,63 @@ export default function LawyerStatsDashboard() {
             </div>
           </div>
 
-          <div className="flex space-x-4">
+          {/* Second Row */}
+          <div className="flex flex-col lg:flex-row gap-4 mt-4">
             {/* Bounce Rate */}
-            <div className="flex space-x-4">
-              {/* Bounce Rate */}
-              <div className="bg-white p-6 pt-5 mt-4 rounded-xl border border-blue-800 w-[377px] h-[386px] font-sans">
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <p className="text-[#718096] text-[13.66px]">Bounce Rate</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <h2 className="text-[23px] font-bold text-gray-900">
-                        2h 15m
-                      </h2>
-                      <div className="flex items-center px-2 py-1 bg-[#5D5FEF] text-white text-xs rounded-full">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="size-4"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
-                          />
-                        </svg>
-                        23.5%
-                      </div>
+            <div className="bg-white p-4 md:p-6 pt-5 rounded-xl border border-blue-800 w-full lg:w-[377px] h-auto md:h-[386px] font-sans">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+                <div>
+                  <p className="text-[#718096] text-[13.66px]">Bounce Rate</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <h2 className="text-[23px] font-bold text-gray-900">
+                      2h 15m
+                    </h2>
+                    <div className="flex items-center px-2 py-1 bg-[#5D5FEF] text-white text-xs rounded-full">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-4"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                        />
+                      </svg>
+                      23.5%
                     </div>
                   </div>
-                  <div className="flex items-center ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
-                    Last 7 Days
-                    <Calendar className="w-4 h-4 ml-1 text-gray-400" />
-                  </div>
                 </div>
-
-                {/* Chart Area with 229px width and height */}
-                <div className="relative h-[229px] w-[229px] mx-auto">
-                  <div className="absolute inset-0 rounded-full  border-[40px] border-[#5D5FEF] "></div>
-                  <div className="absolute inset-0 rounded-full border-[40px] border-t-[#FD4E4E] border-r-[#FD4E4E] border-b-transparent border-l-transparent transform rotate-45"></div>
+                <div className="flex items-center mt-2 sm:mt-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                  Last 7 Days
+                  <Calendar className="w-4 h-4 ml-1 text-gray-400" />
                 </div>
+              </div>
 
-                <div className="flex justify-center gap-6 mt-4">
-                  <div className="flex items-center">
-                    <span className="w-3 h-3 rounded-full bg-[#5D5FEF] mr-2"></span>
-                    <span className="text-xs text-gray-600">Engaged</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="w-3 h-3 rounded-full bg-[#FD4E4E] mr-2"></span>
-                    <span className="text-xs text-gray-600">No Action</span>
-                  </div>
+              {/* Chart Area adjusted for mobile */}
+              <div className="relative h-[180px] md:h-[229px] w-[180px] md:w-[229px] mx-auto">
+                <div className="absolute inset-0 rounded-full border-[30px] md:border-[40px] border-[#5D5FEF]"></div>
+                <div className="absolute inset-0 rounded-full border-[30px] md:border-[40px] border-t-[#FD4E4E] border-r-[#FD4E4E] border-b-transparent border-l-transparent transform rotate-45"></div>
+              </div>
+
+              <div className="flex justify-center gap-6 mt-4">
+                <div className="flex items-center">
+                  <span className="w-3 h-3 rounded-full bg-[#5D5FEF] mr-2"></span>
+                  <span className="text-xs text-gray-600">Engaged</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-3 h-3 rounded-full bg-[#FD4E4E] mr-2"></span>
+                  <span className="text-xs text-gray-600">No Action</span>
                 </div>
               </div>
             </div>
 
             {/* Average Time from Lead Arrival to First Message */}
-            <div className="bg-white rounded-2xl  p-6 mt-4 w-[645px] h-[386px] relative border border-blue-600">
-              <div className="flex justify-between items-start mb-4">
+            <div className="bg-white rounded-2xl p-4 md:p-6 w-full lg:w-[645px] h-auto md:h-[386px] relative border border-blue-600 mt-4 lg:mt-0">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4">
                 <div>
                   <p className="text-[#718096] text-[13.66px]">
                     Average Time from Lead Arrival to First Message
@@ -408,17 +407,17 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                <div className="flex items-center mt-2 sm:mt-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                   Last 7 Days
                   <Calendar className="w-4 h-4 ml-1 text-gray-400" />
                 </div>
               </div>
 
-              <div className="w-full h-[283px] relative">
+              <div className="w-full h-[200px] md:h-[283px] relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={responseTimeData}
-                    margin={{ top: 20, right: 20, left: 30, bottom: 20 }}
+                    margin={{ top: 20, right: 20, left: -20, bottom: 20 }}
                   >
                     <CartesianGrid
                       vertical={false}
@@ -455,9 +454,9 @@ export default function LawyerStatsDashboard() {
                   </LineChart>
                 </ResponsiveContainer>
 
-                {/* Wednesday Highlight */}
+                {/* Wednesday Highlight - hidden on small screens */}
                 <div
-                  className="absolute"
+                  className="absolute hidden md:block"
                   style={{
                     top: "25%",
                     left: "55%",
@@ -470,10 +469,10 @@ export default function LawyerStatsDashboard() {
                     style={{
                       height: "195px",
                       width: "42px",
-                      left: "72%",
+                      left: "49%",
                       top: "-9px",
                       transform: "translateX(-50%)",
-                      borderColor: "#FFFFFF", // light version ofrgb(255, 255, 255)
+                      borderColor: "#FFFFFF",
                     }}
                   />
 
@@ -483,7 +482,7 @@ export default function LawyerStatsDashboard() {
                     style={{
                       height: "189px",
                       width: "42px",
-                      left: "50%",
+                      left: "25%",
                       transform: "translateX(-50%)",
                       borderRadius: "5px",
                       background: "linear-gradient(to top,white, #5D5FEF)",
@@ -496,7 +495,7 @@ export default function LawyerStatsDashboard() {
                     style={{
                       height: "100px",
                       bottom: "0",
-                      left: "50%",
+                      left: "25%",
                       transform: "translateX(-50%)",
                       borderRadius: "5px",
                       background: "linear-gradient(to bottom,white #5D5FEF)",
@@ -506,14 +505,15 @@ export default function LawyerStatsDashboard() {
 
                   {/* Overlay Tag */}
                   <div
-                    className="bg-white rounded-lg px-4 py-2 z-50 "
+                    className="bg-white rounded-lg px-4 py-2 z-20"
                     style={{
-                      top: "50px",
-                      transform: "translateX(0%)",
-                      zIndex: 999, // Ensures it's on top
+                      top: "40px",
+                      transform: "translateX(-20%)",
+                      zIndex: 20, // Ensures it's on top
+                      left:"40px"
                     }}
                   >
-                    <div className="text-[#5D5FEF] text-[13.66px] font-semibold">
+                    <div className="text-[#5D5FEF] text-[13.66px] font-semibold z-20">
                       2h 15m
                     </div>
                     <div className="text-gray-500 text-[9.76px]">Average</div>
@@ -523,11 +523,12 @@ export default function LawyerStatsDashboard() {
             </div>
           </div>
 
-          <div className="flex space-x-4 ">
+          {/* Third Row */}
+          <div className="flex flex-col lg:flex-row gap-4 mt-4">
             {/* Average Time by Day */}
-            <div className="flex flex-col p-6 pt-4 mt-4 rounded-xl bg-white  border border-blue-800 w-[645px] h-[386px]">
+            <div className="flex flex-col p-4 md:p-6 pt-4 rounded-xl bg-white border border-blue-800 w-full lg:w-[645px] h-auto md:h-[386px]">
               <div className="p-2">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
                   <div>
                     <h3 className="text-[#718096] text-[13.66px] font-small">
                       Average Time from Lead Arrival to First Message
@@ -555,7 +556,7 @@ export default function LawyerStatsDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                  <div className="flex items-center mt-2 sm:mt-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                     Last 7 Days
                     <Calendar className="w-4 h-4 ml-1 text-gray-400" />
                   </div>
@@ -579,18 +580,19 @@ export default function LawyerStatsDashboard() {
                   ))}
                 </div>
 
-                <div className="flex justify-between mt-4 text-xs text-gray-600 px-8">
+                <div className="flex justify-between mt-4 text-xs text-gray-600 px-2 md:px-8">
                   <span>0</span>
-                  <span>100</span>
+                  <span className="hidden sm:inline">100</span>
                   <span>200</span>
-                  <span>300</span>
+                  <span className="hidden sm:inline">300</span>
                   <span>400</span>
                   <span>500</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-6 pt-5 mt-4 rounded-lg  border border-blue-800 w-[377px] h-[386px]">
+            {/* Profile View to Chat Conversion Rate */}
+            <div className="bg-white p-4 md:p-6 pt-5 rounded-lg border border-blue-800 w-full lg:w-[377px] h-auto md:h-[386px] mt-4 lg:mt-0">
               <div>
                 <p className="text-[#718096] text-[13.66px]">
                   Profile View to Chat Conversion Rate
@@ -618,7 +620,12 @@ export default function LawyerStatsDashboard() {
               </div>
 
               <div className="relative w-full">
-                <svg width="298px" height="255px" viewBox="-100 -90 200 120">
+                <svg
+                  width="100%"
+                  height="255px"
+                  viewBox="-100 -90 200 120"
+                  className="mx-auto"
+                >
                   {/* Background arc */}
                   {createArc(-90, 170, "#EBEAFF")}
 
@@ -661,23 +668,11 @@ export default function LawyerStatsDashboard() {
                   </text>
                 </svg>
               </div>
-
-              {/* Stats display */}
-              {/* <div className="flex w-full justify-between mt-6 text-center">
-                <div>
-                  <p className="text-lg font-bold">{totalViews}</p>
-                  <p className="text-xs text-gray-500">Profile Views</p>
-                </div>
-                <div>
-                  <p className="text-lg font-bold">{chatsStarted}</p>
-                  <p className="text-xs text-gray-500">Chats Started</p>
-                </div>
-              </div> */}
             </div>
           </div>
 
-          {/* Last Post Published */}
-          <div className="bg-white p-6  mt-4 rounded-lg  border border-blue-800 w-[377px] h-[106px]">
+          {/* Last Blog Published - Responsive width */}
+          <div className="bg-white p-4 md:p-6 mt-4 rounded-lg border border-blue-800 w-full md:w-[377px] h-auto md:h-[106px]">
             <div>
               <p className="text-[#718096] text-[13.66px]">
                 Last Blog Published
