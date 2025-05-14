@@ -103,11 +103,11 @@ export default function LawyerStatsDashboard() {
 
   return (
 
-    <div className="container">
+    <div className="w-screen h-screen bg-gray-50">
       {/* Main Content */}
-      <main className="">
-          <div className="content">
-            <div className="flex  space-x-4">
+      <main className="p-5 ">
+          <div className="">
+            <div className="flex space-x-4">
               {/* Average Response Time */}
               <div className="bg-white rounded-2xl  p-6  w-[645px] h-[386px] relative border border-blue-600">
                 <div className="flex justify-between items-start mb-2">
