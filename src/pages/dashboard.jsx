@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -12,11 +12,9 @@ import {
   ReferenceArea,
   CartesianGrid,
 } from "recharts";
-import {
-  Clock,
-  Calendar,
-} from "lucide-react";
+import { Clock, Calendar } from "lucide-react";
 import { ArrowUp } from "lucide-react";
+import axios from "axios";
 
 const responseTimeData = [
   { name: "Sun", value: 2.2 },
@@ -49,6 +47,9 @@ const weekdayLeadTimeData = [
 
 export default function LawyerStatsDashboard() {
   const [value, setValue] = useState(80);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const [totalViews, setTotalViews] = useState(400);
   const maxValue = 500;
 
@@ -62,6 +63,105 @@ export default function LawyerStatsDashboard() {
   const angleRad = (angle * Math.PI) / 180;
   const x = radius * Math.cos(angleRad);
   const y = radius * Math.sin(angleRad);
+  
+  // Fetch data on component mount
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/statistics/L002")
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching statistics:", error);
+      });
+  }, []);
+
+// Extract bounce rate percentage
+  const getBounceRateValue = () => {
+    if (!data || !data.bounceRate) return "N/A";
+    return data.bounceRate;
+  };
+
+  // Get the numeric value (56.67) from "56.67%"
+  const getBounceRateNumeric = () => {
+    if (!data || !data.bounceRate) return 0;
+    return parseFloat(data.bounceRate.replace("%", ""));
+  };
+
+  // Calculate the conversion/engagement rate (100% - bounce rate)
+  const getEngagementRate = () => {
+    if (!data || !data.bounceRate) return "N/A";
+    const bounceRateValue = parseFloat(data.bounceRate.replace("%", ""));
+    return (100 - bounceRateValue).toFixed(2) + "%";
+  };
+  // Create the donut chart using SVG
+  const renderDonutChart = () => {
+    const size = 229;
+    const strokeWidth = 40;
+    const radius = (size - strokeWidth) / 2;
+    const center = size / 2;
+    
+    // Calculate the circumference
+    const circumference = 2 * Math.PI * radius;
+    
+    // The bounce rate from API is shown in BLUE (not red)
+    const bluePercent = getBounceRateNumeric() / 100;
+    const blueArcLength = circumference * bluePercent;
+    
+    // Calculate the remaining (complementary) portion for red
+    const redPercent = (100 - getBounceRateNumeric()) / 100;
+    const redArcLength = circumference * redPercent;
+    
+    // Calculate start point for the red arc (after the blue one)
+    const redArcOffset = blueArcLength;
+
+    return (
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        {/* Blue arc (Bounce Rate from API) - starts at the top (0 degrees) */}
+        <circle
+          cx={center}
+          cy={center}
+          r={radius}
+          fill="transparent"
+          stroke="#5D5FEF"
+          strokeWidth={strokeWidth}
+          strokeDasharray={`${blueArcLength} ${circumference}`}
+          strokeDashoffset="0"
+          transform={`rotate(-90 ${center} ${center})`}
+        />
+        
+        {/* Red arc (No Action) - starts after the blue arc */}
+        <circle
+          cx={center}
+          cy={center}
+          r={radius}
+          fill="transparent"
+          stroke="#FD4E4E"
+          strokeWidth={strokeWidth}
+          strokeDasharray={`${redArcLength} ${circumference}`}
+          strokeDashoffset={-blueArcLength}
+          transform={`rotate(-90 ${center} ${center})`}
+        />
+        
+        {/* White center */}
+        <circle cx={center} cy={center} r={radius - strokeWidth/2} fill="white" />
+        
+        {/* Display the bounce rate in the center with blue color to match */}
+        {/* <text
+          x={center}
+          y={center}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize="20"
+          fontWeight="bold"
+          fill="#5D5FEF"  // Blue color to match the API bounce rate section
+        >
+          {getBounceRateValue()}
+        </text> */}
+      </svg>
+    );
+  };
+
 
   // SVG paths for gauge segments
   const createArc = (startAngle, endAngle, color) => {
@@ -86,9 +186,6 @@ export default function LawyerStatsDashboard() {
       y: radius * Math.sin(angleRad),
     };
   };
-
-  // Growth indicator
-  const growthPercentage = 23.5;
 
   return (
     <div className="w-full">
@@ -321,7 +418,7 @@ export default function LawyerStatsDashboard() {
                   <p className="text-[#718096] text-[13.66px]">Bounce Rate</p>
                   <div className="flex items-center gap-2 mt-1">
                     <h2 className="text-[23px] font-bold text-gray-900">
-                      2h 15m
+                      {getBounceRateValue()}
                     </h2>
                     <div className="flex items-center px-2 py-1 bg-[#5D5FEF] text-white text-xs rounded-full">
                       <svg
@@ -330,7 +427,7 @@ export default function LawyerStatsDashboard() {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="size-4"
+                        className="w-4 h-4"
                       >
                         <path
                           strokeLinecap="round"
@@ -348,20 +445,23 @@ export default function LawyerStatsDashboard() {
                 </div>
               </div>
 
-              {/* Chart Area adjusted for mobile */}
-              <div className="relative h-[180px] md:h-[229px] w-[180px] md:w-[229px] mx-auto">
-                <div className="absolute inset-0 rounded-full border-[30px] md:border-[40px] border-[#5D5FEF]"></div>
-                <div className="absolute inset-0 rounded-full border-[30px] md:border-[40px] border-t-[#FD4E4E] border-r-[#FD4E4E] border-b-transparent border-l-transparent transform rotate-45"></div>
+              {/* Chart Area */}
+              <div className="relative h-[180px] md:h-[229px] w-full flex justify-center">
+                {renderDonutChart()}
               </div>
 
               <div className="flex justify-center gap-6 mt-4">
                 <div className="flex items-center">
                   <span className="w-3 h-3 rounded-full bg-[#5D5FEF] mr-2"></span>
-                  <span className="text-xs text-gray-600">Engaged</span>
+                  <span className="text-xs text-gray-600">
+                    Engaged ({getBounceRateValue()})
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <span className="w-3 h-3 rounded-full bg-[#FD4E4E] mr-2"></span>
-                  <span className="text-xs text-gray-600">No Action</span>
+                  <span className="text-xs text-gray-600">
+                    No Action ({getEngagementRate()})
+                  </span>
                 </div>
               </div>
             </div>
@@ -499,7 +599,7 @@ export default function LawyerStatsDashboard() {
                       top: "40px",
                       transform: "translateX(-20%)",
                       zIndex: 20, // Ensures it's on top
-                      left:"40px"
+                      left: "40px",
                     }}
                   >
                     <div className="text-[#5D5FEF] text-[13.66px] font-semibold z-20">
