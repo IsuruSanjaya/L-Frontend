@@ -15,17 +15,6 @@ import {
 import {
   Clock,
   Calendar,
-  MessageSquare,
-  FileText,
-  Award,
-  Settings,
-  Edit,
-  UserPlus,
-  LogOut,
-  ChevronDown,
-  Bell,
-  Info,
-  IndentIncrease,
 } from "lucide-react";
 import { ArrowUp } from "lucide-react";
 
