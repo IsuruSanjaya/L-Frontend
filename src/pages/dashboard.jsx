@@ -63,7 +63,19 @@ export default function LawyerStatsDashboard() {
   const angleRad = (angle * Math.PI) / 180;
   const x = radius * Math.cos(angleRad);
   const y = radius * Math.sin(angleRad);
-  
+  const views = data?.profileViews || 0;
+
+  const baseMaxViews = 100; // Base scale
+  const maxViews = Math.ceil(views / 100) * 100 || baseMaxViews;
+  const radiusprofile = 80;
+
+  const minAngle = -120; // start angle of gauge
+  const maxAngle = 115; // end angle of gauge
+  const angles = minAngle + (views / maxViews) * (maxAngle - minAngle);
+  const radians = ((angles - 90) * Math.PI) / 180;
+  const xprofile = Math.cos(radians) * radiusprofile;
+  const yprofile = Math.sin(radians) * radiusprofile;
+
   // Fetch data on component mount
   useEffect(() => {
     axios
@@ -76,7 +88,22 @@ export default function LawyerStatsDashboard() {
       });
   }, []);
 
-// Extract bounce rate percentage
+  const ConversationRate = data?.conversionRate || 0;
+
+  const getProfileClicksChartData = () => {
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const stats = data?.last7DaysStats || [];
+
+    return days.map((day) => {
+      const match = stats.find((item) => item.day === day);
+      return {
+        day,
+        profileClicks: match?.profileClick || 0,
+      };
+    });
+  };
+
+  // Extract bounce rate percentage
   const getBounceRateValue = () => {
     if (!data || !data.bounceRate) return "N/A";
     return data.bounceRate;
@@ -100,18 +127,18 @@ export default function LawyerStatsDashboard() {
     const strokeWidth = 40;
     const radius = (size - strokeWidth) / 2;
     const center = size / 2;
-    
+
     // Calculate the circumference
     const circumference = 2 * Math.PI * radius;
-    
+
     // The bounce rate from API is shown in BLUE (not red)
     const bluePercent = getBounceRateNumeric() / 100;
     const blueArcLength = circumference * bluePercent;
-    
+
     // Calculate the remaining (complementary) portion for red
     const redPercent = (100 - getBounceRateNumeric()) / 100;
     const redArcLength = circumference * redPercent;
-    
+
     // Calculate start point for the red arc (after the blue one)
     const redArcOffset = blueArcLength;
 
@@ -129,7 +156,7 @@ export default function LawyerStatsDashboard() {
           strokeDashoffset="0"
           transform={`rotate(-90 ${center} ${center})`}
         />
-        
+
         {/* Red arc (No Action) - starts after the blue arc */}
         <circle
           cx={center}
@@ -142,10 +169,15 @@ export default function LawyerStatsDashboard() {
           strokeDashoffset={-blueArcLength}
           transform={`rotate(-90 ${center} ${center})`}
         />
-        
+
         {/* White center */}
-        <circle cx={center} cy={center} r={radius - strokeWidth/2} fill="white" />
-        
+        <circle
+          cx={center}
+          cy={center}
+          r={radius - strokeWidth / 2}
+          fill="white"
+        />
+
         {/* Display the bounce rate in the center with blue color to match */}
         {/* <text
           x={center}
@@ -162,8 +194,7 @@ export default function LawyerStatsDashboard() {
     );
   };
 
-
-  // SVG paths for gauge segments
+  // SVG arc drawing function
   const createArc = (startAngle, endAngle, color) => {
     const start = polarToCartesian(radius, startAngle);
     const end = polarToCartesian(radius, endAngle);
@@ -186,7 +217,6 @@ export default function LawyerStatsDashboard() {
       y: radius * Math.sin(angleRad),
     };
   };
-
   return (
     <div className="w-full">
       {/* Main Content */}
@@ -347,7 +377,7 @@ export default function LawyerStatsDashboard() {
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <h2 className="text-[23px] font-bold text-gray-900">
-                        1000
+                        {data?.profileClicks || 0}
                       </h2>
                       <div className="flex items-center px-2 py-1 bg-[#5D5FEF] text-white text-xs rounded-full">
                         <svg
@@ -380,11 +410,11 @@ export default function LawyerStatsDashboard() {
               <div className="h-48 md:h-58 mt-8">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={profileClicksData}
+                    data={getProfileClicksChartData()}
                     margin={{ top: 5, right: 10, bottom: 5, left: -20 }}
                   >
                     <XAxis
-                      dataKey="name"
+                      dataKey="day"
                       axisLine={false}
                       tickLine={false}
                       tick={{ fontSize: 13.66, fill: "#718096" }}
@@ -394,11 +424,10 @@ export default function LawyerStatsDashboard() {
                       axisLine={false}
                       tickLine={false}
                       tick={{ fontSize: 13.66, fill: "#718096" }}
-                      domain={[0, 250]}
-                      ticks={[50, 100, 150, 200, 250]}
+                      domain={["auto", "auto"]}
                     />
                     <Bar
-                      dataKey="value"
+                      dataKey="profileClicks"
                       fill="#5D5FEF"
                       radius={[4, 4, 0, 0]}
                       barSize={22}
@@ -687,7 +716,9 @@ export default function LawyerStatsDashboard() {
                   Profile View to Chat Conversion Rate
                 </p>
                 <div className="flex items-center gap-2 mt-1">
-                  <h2 className="text-[23px] font-bold text-gray-900">85%</h2>
+                  <h2 className="text-[23px] font-bold text-gray-900">
+                    {data?.conversionRate || 0}
+                  </h2>
                   <div className="flex items-center px-2 py-1 bg-[#5D5FEF] text-white text-xs rounded-full">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -715,20 +746,18 @@ export default function LawyerStatsDashboard() {
                   viewBox="-100 -90 200 120"
                   className="mx-auto"
                 >
-                  {/* Background arc */}
-                  {createArc(-90, 170, "#EBEAFF")}
+                  {/* Background arc in light color */}
+                  {createArc(minAngle, maxAngle, "#EBEAFF")}
 
-                  {/* Colored segments - using the purple color from the image */}
-                  {createArc(-90, 10, "#5D5FEF")}
-                  {createArc(-90, 0, "#5D5FEF")}
-                  {createArc(-130, angle, "#5D5FEF")}
+                  {/* Colored arc showing progress (single color) */}
+                  {createArc(minAngle, angles, "#5D5FEF")}
 
                   {/* Needle */}
                   <line
                     x1="0"
                     y1="0"
-                    x2={x * 0.8}
-                    y2={y * 0.8}
+                    x2={xprofile * 0.8}
+                    y2={yprofile * 0.8}
                     stroke="#1F2937"
                     strokeWidth="3"
                     strokeLinecap="round"
@@ -744,7 +773,7 @@ export default function LawyerStatsDashboard() {
                     textAnchor="middle"
                     fill="#1F2937"
                   >
-                    {totalViews}
+                    {views}
                   </text>
                   <text
                     x="0"
