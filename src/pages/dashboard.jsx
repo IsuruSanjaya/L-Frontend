@@ -719,7 +719,7 @@ export default function LawyerStatsDashboard() {
 
             {/* Profile View to Chat Conversion Rate */}
             <div className="lg:col-span-4 bg-white p-4 md:p-6 pt-5 rounded-xl border border-blue-800 h-auto md:h-[386px] font-sans">
-              <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-center mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-1 sm:justify-between sm:items-center mb-2">
                 <p className="text-[#718096] text-[13.66px]">
                   Profile View to Chat Conversion Rate
                 </p>
