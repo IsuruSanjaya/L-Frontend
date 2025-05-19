@@ -223,10 +223,10 @@ export default function LawyerStatsDashboard() {
       <main className="p-2 md:p-5">
         <div className="w-full">
           {/* First Row */}
-          <div className="flex flex-col lg:flex-row gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-12 gap-10">
             {/* Average Response Time */}
-            <div className="bg-white rounded-2xl p-4 md:p-6 w-full lg:w-[645px] h-auto md:h-[386px] relative border border-blue-600">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
+            <div className="lg:col-span-8 bg-white rounded-2xl p-4 md:p-6 h-auto md:h-[386px] relative border border-blue-600">
+              <div className="grid grid-cols-10 sm:grid-cols-2 sm:justify-between sm:items-start mb-2">
                 <div>
                   <p className="text-[#718096] text-[13.66px]">
                     Average Response Time
@@ -254,9 +254,11 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center mt-2 sm:mt-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
-                  Last 7 Days
-                  <Calendar className="w-4 h-4 ml-1 text-gray-400" />
+                <div className="flex justify-end items-end mt-2 sm:mt-0">
+                  <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                    Last 7 Days
+                    <Calendar className="w-4 h-4 ml-1 text-gray-400" />
+                  </div>
                 </div>
               </div>
 
@@ -368,9 +370,9 @@ export default function LawyerStatsDashboard() {
               </div>
             </div>
             {/* Profile Clicks */}
-            <div className="bg-white p-4 md:p-6 rounded-xl border border-blue-600 w-full lg:w-[377px] h-auto md:h-[386px] mt-4 lg:mt-0">
+            <div className="lg:col-span-4 bg-white p-4 md:p-6 rounded-xl border border-blue-600 h-auto md:h-[386px]">
               <div className="mb-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div className="grid grid-cols-1 sm:grid-cols-2 sm:items-center sm:justify-between">
                   <div>
                     <p className="text-[#718096] text-[13.66px]">
                       Profile Clicks
@@ -398,7 +400,7 @@ export default function LawyerStatsDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center mt-2 sm:mt-0">
+                  <div className="flex justify-end items-end mt-2 sm:mt-0">
                     <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                       Last 7 Days
                       <Calendar className="w-4 h-4 ml-1 text-gray-400" />
@@ -439,10 +441,10 @@ export default function LawyerStatsDashboard() {
           </div>
 
           {/* Second Row */}
-          <div className="flex flex-col lg:flex-row gap-4 mt-4">
-            {/* Bounce Rate */}
-            <div className="bg-white p-4 md:p-6 pt-5 rounded-xl border border-blue-800 w-full lg:w-[377px] h-auto md:h-[386px] font-sans">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
+            {/* Bounce Rate - 4 columns */}
+            <div className="lg:col-span-4 bg-white p-4 md:p-6 pt-5 rounded-xl border border-blue-800 h-auto md:h-[386px] font-sans">
+              <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-center mb-6">
                 <div>
                   <p className="text-[#718096] text-[13.66px]">Bounce Rate</p>
                   <div className="flex items-center gap-2 mt-1">
@@ -468,9 +470,11 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center mt-2 sm:mt-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
-                  Last 7 Days
-                  <Calendar className="w-4 h-4 ml-1 text-gray-400" />
+                <div className="flex justify-end items-end mt-2 sm:mt-0">
+                  <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                    Last 7 Days
+                    <Calendar className="w-4 h-4 ml-1 text-gray-400" />
+                  </div>
                 </div>
               </div>
 
@@ -496,8 +500,8 @@ export default function LawyerStatsDashboard() {
             </div>
 
             {/* Average Time from Lead Arrival to First Message */}
-            <div className="bg-white rounded-2xl p-4 md:p-6 w-full lg:w-[645px] h-auto md:h-[386px] relative border border-blue-600 mt-4 lg:mt-0">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4">
+            <div className="lg:col-span-8 bg-white rounded-2xl p-4 md:p-6 h-auto md:h-[386px] relative border border-blue-600">
+              <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-start mb-4">
                 <div>
                   <p className="text-[#718096] text-[13.66px]">
                     Average Time from Lead Arrival to First Message
@@ -525,9 +529,11 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center mt-2 sm:mt-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
-                  Last 7 Days
-                  <Calendar className="w-4 h-4 ml-1 text-gray-400" />
+                <div className="flex justify-end items-end mt-2 sm:mt-0">
+                  <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                    Last 7 Days
+                    <Calendar className="w-4 h-4 ml-1 text-gray-400" />
+                  </div>
                 </div>
               </div>
 
@@ -642,11 +648,11 @@ export default function LawyerStatsDashboard() {
           </div>
 
           {/* Third Row */}
-          <div className="flex flex-col lg:flex-row gap-4 mt-4">
-            {/* Average Time by Day */}
-            <div className="flex flex-col p-4 md:p-6 pt-4 rounded-xl bg-white border border-blue-800 w-full lg:w-[645px] h-auto md:h-[386px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
+            {/* Average Time by Day - 8 columns */}
+            <div className="lg:col-span-8 p-4 md:p-6 pt-4 rounded-xl bg-white border border-blue-800 h-auto md:h-[386px]">
               <div className="p-2">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-center mb-4">
                   <div>
                     <h3 className="text-[#718096] text-[13.66px] font-small">
                       Average Time from Lead Arrival to First Message
@@ -674,10 +680,12 @@ export default function LawyerStatsDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center mt-2 sm:mt-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                  <div className="flex justify-end items-end mt-2 sm:mt-0">
+                  <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                     Last 7 Days
                     <Calendar className="w-4 h-4 ml-1 text-gray-400" />
                   </div>
+                </div>
                 </div>
 
                 <div className="space-y-3 mt-5">
@@ -710,8 +718,8 @@ export default function LawyerStatsDashboard() {
             </div>
 
             {/* Profile View to Chat Conversion Rate */}
-            <div className="bg-white p-4 md:p-6 pt-5 rounded-lg border border-blue-800 w-full lg:w-[377px] h-auto md:h-[386px] mt-4 lg:mt-0">
-              <div>
+            <div className="lg:col-span-4 bg-white p-4 md:p-6 pt-5 rounded-xl border border-blue-800 h-auto md:h-[386px] font-sans">
+              <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-center mb-6">
                 <p className="text-[#718096] text-[13.66px]">
                   Profile View to Chat Conversion Rate
                 </p>
