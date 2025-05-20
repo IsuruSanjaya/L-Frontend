@@ -223,10 +223,11 @@ export default function LawyerStatsDashboard() {
       <main className="p-2 md:p-5">
         <div className="w-full">
           {/* First Row */}
-          <div className="grid grid-cols-2 lg:grid-cols-12 gap-10">
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             {/* Average Response Time */}
             <div className="lg:col-span-8 bg-white rounded-2xl p-4 md:p-6 h-auto md:h-[386px] relative border border-blue-600">
-              <div className="grid grid-cols-10 sm:grid-cols-2 sm:justify-between sm:items-start mb-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-start mb-6">
                 <div>
                   <p className="text-[#718096] text-[13.66px]">
                     Average Response Time
@@ -443,11 +444,15 @@ export default function LawyerStatsDashboard() {
           {/* Second Row */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
             {/* Bounce Rate - 4 columns */}
-            <div className="lg:col-span-4 bg-white p-4 md:p-6 pt-5 rounded-xl border border-blue-800 h-auto md:h-[386px] font-sans">
-              <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-center mb-6">
+            {/* Fully responsive Bounce Rate Card with mobile-first approach */}
+            <div className="lg:col-span-4 bg-white p-5 md:p-5 rounded-xl border border-blue-800 h-auto md:h-[386px] font-sans">
+              {/* Header Section */}
+              <div className="grid grid-cols-2 gap-2 mb-2">
                 <div>
-                  <p className="text-[#718096] text-[13.66px]">Bounce Rate</p>
-                  <div className="flex items-center gap-2 mt-1">
+                  <p className="text-[#718096] text-[13.66px]">
+                    Bounce Rate
+                  </p>
+                  <div className="flex items-center gap-1 sm:gap-2 mt-1">
                     <h2 className="text-[23px] font-bold text-gray-900">
                       {getBounceRateValue()}
                     </h2>
@@ -458,7 +463,7 @@ export default function LawyerStatsDashboard() {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="w-4 h-4"
+                        className="size-4 text-[9px]"
                       >
                         <path
                           strokeLinecap="round"
@@ -470,7 +475,7 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-end items-end mt-2 sm:mt-0">
+               <div className="flex justify-end items-end mt-2 sm:mt-0">
                   <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                     Last 7 Days
                     <Calendar className="w-4 h-4 ml-1 text-gray-400" />
@@ -478,23 +483,27 @@ export default function LawyerStatsDashboard() {
                 </div>
               </div>
 
-              {/* Chart Area */}
-              <div className="relative h-[180px] md:h-[229px] w-full flex justify-center">
-                {renderDonutChart()}
-              </div>
-
-              <div className="flex justify-center gap-6 mt-4">
-                <div className="flex items-center">
-                  <span className="w-3 h-3 rounded-full bg-[#5D5FEF] mr-2"></span>
-                  <span className="text-xs text-gray-600">
-                    Engaged ({getBounceRateValue()})
-                  </span>
+              {/* Chart and Legend Container - Mobile First Approach */}
+              <div className="grid grid-rows-2 h-auto">
+                {/* Chart Area - Constrained size on mobile */}
+                <div className="flex justify-center mt-9 items-center h-[120px] sm:h-[150px] md:h-[180px] w-full">
+                  {renderDonutChart()}
                 </div>
-                <div className="flex items-center">
-                  <span className="w-3 h-3 rounded-full bg-[#FD4E4E] mr-2"></span>
-                  <span className="text-xs text-gray-600">
-                    No Action ({getEngagementRate()})
-                  </span>
+
+                {/* Legend - Always positioned below chart */}
+                <div className="flex flex-wrap justify-center items-start gap-4 mt-10 pt-5 pb-2 h-auto">
+                  <div className="flex items-center">
+                    <span className="w-3 h-3 rounded-full bg-[#5D5FEF] mr-2 flex-shrink-0"></span>
+                    <span className="text-xs text-gray-600 whitespace-nowrap">
+                      Engaged ({getBounceRateValue()})
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="w-3 h-3 rounded-full bg-[#FD4E4E] mr-2 flex-shrink-0"></span>
+                    <span className="text-xs text-gray-600 whitespace-nowrap">
+                      No Action ({getEngagementRate()})
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -681,11 +690,11 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                   <div className="flex justify-end items-end mt-2 sm:mt-0">
-                  <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
-                    Last 7 Days
-                    <Calendar className="w-4 h-4 ml-1 text-gray-400" />
+                    <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                      Last 7 Days
+                      <Calendar className="w-4 h-4 ml-1 text-gray-400" />
+                    </div>
                   </div>
-                </div>
                 </div>
 
                 <div className="space-y-3 mt-5">
