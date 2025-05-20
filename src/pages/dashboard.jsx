@@ -255,7 +255,7 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-end items-end mt-2 sm:mt-0">
+                <div className="flex justify-end items-end mt-4 sm:mt-4">
                   <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                     Last 7 Days
                     <Calendar className="w-4 h-4 ml-1 text-gray-400" />
@@ -402,7 +402,7 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                   <div className="flex justify-end items-end mt-2 sm:mt-0">
-                    <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                    <div className="flex items-center ml-0 sm:ml-8 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                       Last 7 Days
                       <Calendar className="w-4 h-4 ml-1 text-gray-400" />
                     </div>
@@ -538,8 +538,8 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-end items-end mt-2 sm:mt-0">
-                  <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
+                <div className="flex justify-end items-end mt-2 sm:mt-6">
+                  <div className="flex items-center ml-8 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                     Last 7 Days
                     <Calendar className="w-4 h-4 ml-1 text-gray-400" />
                   </div>
