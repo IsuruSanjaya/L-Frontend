@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   LineChart,
   Line,
@@ -14,41 +14,20 @@ import {
 } from "recharts";
 import { Clock, Calendar } from "lucide-react";
 import { ArrowUp } from "lucide-react";
-import axios from "axios";
-
-const responseTimeData = [
-  { name: "Sun", value: 2.2 },
-  { name: "Mon", value: 2.8 },
-  { name: "Tue", value: 2.4 },
-  { name: "Wed", value: 3.25 },
-  { name: "Thu", value: 2.6 },
-  { name: "Fri", value: 3.0 },
-  { name: "Sat", value: 3.8 },
-];
-const profileClicksData = [
-  { name: "Sun", value: 100 },
-  { name: "Mon", value: 150 },
-  { name: "Tue", value: 80 },
-  { name: "Wed", value: 200 },
-  { name: "Thu", value: 90 },
-  { name: "Fri", value: 120 },
-  { name: "Sat", value: 220 },
-];
-
-const weekdayLeadTimeData = [
-  { name: "Sun", value: 285, time: "1h 45m" },
-  { name: "Mon", value: 465, time: "3h 10m" },
-  { name: "Tue", value: 220, time: "1h 20m" },
-  { name: "Wed", value: 420, time: "2h 45m" },
-  { name: "Thu", value: 335, time: "2h 05m" },
-  { name: "Fri", value: 270, time: "1h 50m" },
-  { name: "Sat", value: 480, time: "3h 15m" },
-];
+import { getStatistics, getConversations } from "../services/api/api"; // Adjust path as needed
 
 export default function LawyerStatsDashboard() {
   const [value, setValue] = useState(80);
   const [data, setData] = useState(null);
+  const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [responseTimeData, setResponseTimeData] = useState([]);
+  const lawyerId = "f8e94d08-a968-4987-a840-2e97bef9c803";
+  const [chartData, setChartData] = useState([]); // Fixed: using chartData instead of chartDataa
+  const [delayChartData, setDelayChartData] = useState([]); // New state for delay chart data
+  const [delayTimeData, setDelayTimeData] = useState([]); // New state for delay data
+  const [weekdayLeadTimeData, setWeekdayLeadTimeData] = useState([]);
+  const [maxValues, setMaxValue] = useState(1);
 
   const [totalViews, setTotalViews] = useState(400);
   const maxValue = 500;
@@ -64,7 +43,12 @@ export default function LawyerStatsDashboard() {
   const x = radius * Math.cos(angleRad);
   const y = radius * Math.sin(angleRad);
   const views = data?.profileViews || 0;
-
+  // Added states for overlay positioning fix
+  const [chartDimensions, setChartDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
+  const chartRef = useRef(null);
   const baseMaxViews = 100; // Base scale
   const maxViews = Math.ceil(views / 100) * 100 || baseMaxViews;
   const radiusprofile = 80;
@@ -76,19 +60,463 @@ export default function LawyerStatsDashboard() {
   const xprofile = Math.cos(radians) * radiusprofile;
   const yprofile = Math.sin(radians) * radiusprofile;
 
-  // Fetch data on component mount
+  // Added useEffect for tracking chart dimensions
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/statistics/L002")
-      .then((response) => {
-        setData(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching statistics:", error);
-      });
-  }, []);
+    const updateDimensions = () => {
+      if (chartRef.current) {
+        const rect = chartRef.current.getBoundingClientRect();
+        setChartDimensions({ width: rect.width, height: rect.height });
+      }
+    };
 
-  const ConversationRate = data?.conversionRate || 0;
+    // Initial measurement
+    setTimeout(updateDimensions, 100); // Small delay to ensure chart is rendered
+
+    // Update on resize
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, [chartData]); // Added chartData dependency to update when data changes
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const statsData = await getStatistics(lawyerId);
+        const convData = await getConversations(lawyerId);
+
+        setData(statsData);
+        setConversations(convData);
+        const searchStats = statsData.searchresultdailyStats || [];
+
+        const dailyStats = convData.conversations?.daily_response_stats || [];
+        const delayStats = convData.conversations?.average_delay_stats || [];
+
+        console.log("Daily Response Stats:", dailyStats);
+        console.log("Delay Stats:", delayStats);
+
+        const daysOfWeek = [
+          { key: "Sunday", short: "Sun" },
+          { key: "Monday", short: "Mon" },
+          { key: "Tuesday", short: "Tue" },
+          { key: "Wednesday", short: "Wed" },
+          { key: "Thursday", short: "Thu" },
+          { key: "Friday", short: "Fri" },
+          { key: "Saturday", short: "Sat" },
+        ];
+
+        const formattedLeadTimeData = daysOfWeek.map((dayObj) => {
+          const matching = searchStats.find((item) => {
+            const date = new Date(item.date);
+            const weekday = date.toLocaleDateString("en-US", {
+              weekday: "long",
+            });
+            return weekday === dayObj.key;
+          });
+
+          return {
+            name: dayObj.short,
+            value: matching ? matching.count : 0,
+          };
+        });
+
+        // Format response time data
+        const formattedResponseData = daysOfWeek.map((dayInfo, index) => {
+          const matchingDay = dailyStats.find(
+            (item) => item.day === dayInfo.key
+          );
+
+          if (matchingDay) {
+            const minutes = matchingDay.average_response_minutes;
+            const hours = minutes / 60;
+
+            return {
+              name: dayInfo.short,
+              value: Math.max(hours, 0.01),
+              actualMinutes: minutes,
+              time: formatMinutesToHourMinute(minutes),
+              hasData: true,
+              dayIndex: index,
+            };
+          }
+
+          return {
+            name: dayInfo.short,
+            value: 0.01,
+            actualMinutes: 0,
+            time: "0h 0m",
+            hasData: false,
+            dayIndex: index,
+          };
+        });
+
+        // Format delay time data
+        const formattedDelayData = daysOfWeek.map((dayInfo, index) => {
+          const matchingDelay = delayStats.find(
+            (item) => item.day === dayInfo.key
+          );
+
+          if (matchingDelay) {
+            const minutes = matchingDelay.average_delay_minutes;
+            const hours = minutes / 60;
+
+            return {
+              name: dayInfo.short,
+              value: Math.max(hours, 0.01),
+              actualMinutes: minutes,
+              time: formatMinutesToHourMinute(minutes),
+              hasData: true,
+              dayIndex: index,
+              totalConversations: matchingDelay.total_conversations,
+            };
+          }
+
+          return {
+            name: dayInfo.short,
+            value: 0.01,
+            actualMinutes: 0,
+            time: "0h 0m",
+            hasData: false,
+            dayIndex: index,
+            totalConversations: 0,
+          };
+        });
+
+        setChartData(formattedResponseData);
+        setDelayChartData(formattedDelayData);
+        setResponseTimeData(formattedResponseData);
+        setDelayTimeData(formattedDelayData);
+        setWeekdayLeadTimeData(formattedLeadTimeData);
+        const rawMax = Math.max(
+          ...formattedLeadTimeData.map((d) => d.value),
+          1
+        );
+
+        // Smart scaling based on data range
+        let roundedMax;
+        if (rawMax <= 5) {
+          roundedMax = Math.ceil(rawMax);
+        } else if (rawMax <= 20) {
+          roundedMax = Math.ceil(rawMax / 2) * 2;
+        } else if (rawMax <= 50) {
+          roundedMax = Math.ceil(rawMax / 5) * 5;
+        } else if (rawMax <= 100) {
+          roundedMax = Math.ceil(rawMax / 10) * 10;
+        } else {
+          roundedMax = Math.ceil(rawMax / 100) * 100;
+        }
+
+        setMaxValue(roundedMax);
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [lawyerId]);
+
+  const formatMinutesToHourMinute = (minutes) => {
+    if (!minutes || minutes === 0) return "0m";
+
+    if (minutes >= 60) {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = Math.round(minutes % 60);
+
+      if (remainingMinutes === 0) {
+        return `${hours}h`;
+      } else {
+        return `${hours}h ${remainingMinutes}m`;
+      }
+    } else {
+      return `${Math.round(minutes)}m`;
+    }
+  };
+
+  // Calculate dynamic Y-axis domain based on actual data
+  const getYAxisDomain = () => {
+    if (!chartData || chartData.length === 0) return [0, 5];
+
+    const maxValue = Math.max(...chartData.map((item) => item.value));
+
+    // Always start from 0, minimum scale is 5 hours
+    const minScale = 5;
+
+    if (maxValue <= minScale) {
+      return [0, minScale];
+    } else {
+      // If data exceeds 5 hours, round up to next hour
+      const roundedMax = Math.ceil(maxValue);
+      return [0, roundedMax];
+    }
+  };
+
+  // Generate Y-axis ticks based on domain
+  const getYAxisTicks = () => {
+    const [min, max] = getYAxisDomain();
+
+    // Always use 1 hour increments, starting from 1h
+    const ticks = [];
+    for (let i = 1; i <= max; i++) {
+      ticks.push(i);
+    }
+
+    // If we have a lot of ticks (more than 10), show every 2 hours
+    if (ticks.length > 10) {
+      return ticks.filter((tick, index) => index % 2 === 0 || tick === max);
+    }
+
+    return ticks;
+  };
+
+  // Custom bar component with hover functionality
+  const CustomBar = (props) => {
+    const { fill, x, y, width, height, payload, index } = props;
+
+    return (
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={payload.hasData ? fill : "#f3f4f6"}
+        rx={4}
+        ry={4}
+        style={{ cursor: "pointer" }}
+      />
+    );
+  };
+  // Calculate overlay positions for bars
+  const calculateBarOverlayPosition = (index, totalBars = 7) => {
+    const leftMargin = 50;
+    const rightMargin = 50;
+    const chartWidth = chartDimensions.width || 600;
+
+    const availableWidth = chartWidth - leftMargin - rightMargin;
+    const barSpacing = availableWidth / totalBars;
+    const barCenter = leftMargin + barSpacing * index + barSpacing / 2;
+    const leftPercentage = (barCenter / chartWidth) * 100;
+
+    return {
+      left: `${leftPercentage}%`,
+      transform: "translateX(-50%)",
+    };
+  };
+
+  // Calculate dotted line height based on bar value
+  const calculateDottedLineHeight = (value, maxValue, chartHeight = 200) => {
+    const yAxisDomain = getYAxisDomain(delayTimeData);
+    const maxDomainValue = yAxisDomain[1];
+    const percentage = value / maxDomainValue;
+    return Math.max(percentage * chartHeight * 0.75, 2); // 75% of chart height for bar area
+  };
+
+  // // Calculate dotted line position from bottom
+  // const calculateDottedLineBottom = (chartHeight = 200) => {
+  //   return chartHeight * 0.15; // Start from 15% from bottom (accounting for axis)
+  // };
+
+  // Improved function to calculate overlay positions
+  const calculateOverlayPosition = (index, totalBars = 7) => {
+    // Chart margins from your ResponsiveContainer
+    const leftMargin = 30; // Account for negative left margin
+    const rightMargin = 30;
+    const chartWidth = chartDimensions.width;
+
+    if (chartWidth === 0) {
+      // Fallback positions if dimensions not ready
+      const fallbackPositions = [9.2, 23.1, 37.2, 48.7, 60.2, 71.7, 83.2];
+      return {
+        left: `${fallbackPositions[index]}%`,
+        transform: "translateX(-50%)",
+      };
+    }
+
+    // Calculate available space for bars
+    const availableWidth = chartWidth - leftMargin - rightMargin;
+
+    // Calculate bar spacing and position
+    const barSpacing = availableWidth / totalBars;
+    const barCenter = leftMargin + barSpacing * index + barSpacing / 2;
+
+    // Convert to percentage of total chart width
+    const leftPercentage = (barCenter / chartWidth) * 100;
+
+    return {
+      left: `${leftPercentage}%`,
+      transform: "translateX(-50%)",
+    };
+  };
+
+  // Updated formatMinutesToDisplay function - handles conversion to hours when >= 60 minutes
+  const formatMinutesToDisplay = (minutes) => {
+    if (!minutes || minutes === 0) return "0.00m";
+
+    // If 60 minutes or more, convert to hours and minutes
+    if (minutes >= 60) {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+
+      if (remainingMinutes === 0) {
+        return `${hours}h`;
+      } else if (remainingMinutes < 1) {
+        return `${hours}h ${remainingMinutes.toFixed(1)}m`;
+      } else {
+        return `${hours}h ${Math.round(remainingMinutes)}m`;
+      }
+    }
+
+    // For values less than 60 minutes, show in minutes
+    if (minutes < 0.01) {
+      return `${minutes.toFixed(3)}m`; // 3 decimal places for very small values
+    } else if (minutes < 1) {
+      return `${minutes.toFixed(2)}m`; // 2 decimal places for small values
+    } else {
+      return `${minutes.toFixed(1)}m`; // 1 decimal place for moderate values
+    }
+  };
+
+  const formatOverlayTime = (minutes) => {
+    if (!minutes || minutes === 0) return "0m";
+
+    if (minutes >= 60) {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+
+      if (remainingMinutes < 0.1) {
+        return `${hours}h`;
+      } else if (remainingMinutes < 1) {
+        return `${hours}h ${remainingMinutes.toFixed(1)}m`;
+      } else {
+        return `${hours}h ${Math.round(remainingMinutes)}m`;
+      }
+    } else if (minutes < 1) {
+      return `${minutes.toFixed(1)}m`;
+    } else {
+      return `${minutes.toFixed(1)}m`;
+    }
+  };
+  // Add this custom component for rendering dotted lines
+  const DottedLines = ({ data, chartWidth, chartHeight, margin }) => {
+    if (!data || data.length === 0) return null;
+
+    const barCount = data.length;
+    const availableWidth = chartWidth - margin.left - margin.right;
+    const barSpacing = availableWidth / barCount;
+
+    return (
+      <g>
+        {data.map((item, index) => {
+          if (!item.hasData) return null;
+
+          // Calculate the center position of each bar
+          const barCenterX = margin.left + barSpacing * index + barSpacing / 2;
+
+          return (
+            <line
+              key={`dotted-line-${index}`}
+              x1={barCenterX}
+              y1={margin.top}
+              x2={barCenterX}
+              y2={chartHeight - margin.bottom}
+              stroke="#FFFFFF"
+              strokeWidth="2"
+              strokeDasharray="4,4"
+              opacity="0.8"
+            />
+          );
+        })}
+      </g>
+    );
+  };
+
+  //averag lead message
+  // Calculate dynamic Y-axis domain
+  const getYAxisDomaindelay = (data) => {
+    if (!data || data.length === 0) return [0, 5];
+
+    const maxValue = Math.max(...data.map((item) => item.value));
+    const minScale = 5;
+
+    if (maxValue <= minScale) {
+      return [0, minScale];
+    } else {
+      const roundedMax = Math.ceil(maxValue);
+      return [0, roundedMax];
+    }
+  };
+
+  // Generate Y-axis ticks
+  const getYAxisTicksdelay = (data) => {
+    const [min, max] = getYAxisDomain(data);
+    const ticks = [];
+    for (let i = 1; i <= max; i++) {
+      ticks.push(i);
+    }
+
+    if (ticks.length > 10) {
+      return ticks.filter((tick, index) => index % 2 === 0 || tick === max);
+    }
+
+    return ticks;
+  };
+
+  // Custom bar component
+  const CustomBardelay = (props) => {
+    const { fill, x, y, width, height, payload } = props;
+
+    return (
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={payload.hasData ? fill : "#f3f4f6"}
+        rx={4}
+        ry={4}
+        style={{ cursor: "pointer" }}
+      />
+    );
+  };
+
+  // Get average delay for display
+  const getAverageDelayMinutes = () => {
+    if (!delayTimeData || delayTimeData.length === 0) return 0;
+
+    const validDelays = delayTimeData.filter((day) => day.hasData);
+    if (validDelays.length === 0) return 0;
+
+    const totalMinutes = validDelays.reduce(
+      (sum, day) => sum + day.actualMinutes,
+      0
+    );
+    return totalMinutes / validDelays.length;
+  };
+
+  // Calculate overall average response time
+  const getAverageResponseTime = () => {
+    if (!responseTimeData || responseTimeData.length === 0) return 0;
+
+    const validResponses = responseTimeData.filter((day) => day.hasData);
+    if (validResponses.length === 0) return 0;
+
+    const totalMinutes = validResponses.reduce(
+      (sum, day) => sum + day.actualMinutes,
+      0
+    );
+    return totalMinutes / validResponses.length;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">Loading...</div>
+    );
+  }
+
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const avgResponseTime7Days = data?.avgResponseTime7Days || {};
 
   const getProfileClicksChartData = () => {
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -105,9 +533,17 @@ export default function LawyerStatsDashboard() {
 
   // Extract bounce rate percentage
   const getBounceRateValue = () => {
-    if (!data || !data.bounceRate) return "N/A";
+    if (!data || !data.bounceRate) return "No Data";
     return data.bounceRate;
   };
+
+  // Extract bounce rate percentage
+  const getSearchCount = () => {
+    if (!data || !data.searchResultCount) return "No Data";
+    return data.searchResultCount;
+  };
+
+  console.log(data.searchResultCount);
 
   // Get the numeric value (56.67) from "56.67%"
   const getBounceRateNumeric = () => {
@@ -210,6 +646,13 @@ export default function LawyerStatsDashboard() {
     );
   };
 
+  <defs>
+    <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#5D5FEF" />
+      <stop offset="100%" stopColor="#FFFFFF" />
+    </linearGradient>
+  </defs>;
+
   const polarToCartesian = (radius, angle) => {
     const angleRad = ((angle - 90) * Math.PI) / 180;
     return {
@@ -234,7 +677,7 @@ export default function LawyerStatsDashboard() {
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <h2 className="text-[23px] font-bold text-gray-900">
-                      2h 15m
+                      {formatMinutesToDisplay(getAverageResponseTime())}
                     </h2>
                     <div className="flex items-center px-2 py-1 bg-[#5D5FEF] text-white text-xs rounded-full">
                       <svg
@@ -263,12 +706,27 @@ export default function LawyerStatsDashboard() {
                 </div>
               </div>
 
-              <div className="w-full h-[200px] md:h-[283px] relative">
+              <div
+                ref={chartRef}
+                className="w-full h-[200px] md:h-[283px] relative"
+              >
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={responseTimeData}
-                    margin={{ top: 20, right: 30, left: -30, bottom: 20 }}
+                  <ComposedChart
+                    data={chartData}
+                    margin={{ top: 30, right: 30, left: -30, bottom: 20 }}
                   >
+                    <defs>
+                      <linearGradient
+                        id="barGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop offset="0%" stopColor="#5D5FEF" />
+                        <stop offset="100%" stopColor="#FFFFFF" />
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid
                       vertical={false}
                       stroke="#f0f0f0"
@@ -281,13 +739,29 @@ export default function LawyerStatsDashboard() {
                       tick={{ fill: "#718096", fontSize: 13.66 }}
                     />
                     <YAxis
-                      domain={[0, 5]}
-                      ticks={[1, 2, 3, 4, 5]}
+                      domain={getYAxisDomain()}
+                      ticks={getYAxisTicks()}
                       tickFormatter={(value) => `${value}h`}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: "#718096", fontSize: 13.66 }}
                     />
+                    {/* Add dotted lines in the center of bars */}
+                    <DottedLines
+                      data={chartData}
+                      chartWidth={400} // Adjust based on your chart size
+                      chartHeight={283} // Adjust based on your chart size
+                      margin={{ top: 30, right: 30, left: -30, bottom: 20 }}
+                    />
+                    {/* Bar Chart with custom bars */}
+                    <Bar
+                      dataKey="value"
+                      fill="url(#barGradient)"
+                      radius={[4, 4, 0, 0]}
+                      barSize={40}
+                      shape={<CustomBar />}
+                    />
+                    {/* Line Chart */}
                     <Line
                       type="monotone"
                       dataKey="value"
@@ -301,75 +775,49 @@ export default function LawyerStatsDashboard() {
                         strokeWidth: 2.44,
                       }}
                     />
-                  </LineChart>
+                    <ReferenceLine
+                      x="Wed" // or whatever day you want the line on
+                      stroke="#FFFFFF"
+                      strokeWidth="2"
+                      strokeDasharray="4,4"
+                      opacity="0.8"
+                    />
+                  </ComposedChart>
                 </ResponsiveContainer>
 
-                {/* Wednesday Highlight */}
-                <div
-                  className="absolute hidden md:block"
-                  style={{
-                    top: "45%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                  }}
-                >
-                  {/* Dotted Line */}
-                  <div
-                    className="absolute w-0 border-l-2 border-dashed z-10"
-                    style={{
-                      height: "145px", // Same height as the bar
-                      width: "42px",
-                      left: "73%",
-                      top: "-9px",
-                      transform: "translateX(-50%)",
-                      borderColor: "#FFFFFF", // light version ofrgb(255, 255, 255)
-                    }}
-                  />
-                  {/* Bar Background */}
-                  <div
-                    className="absolute w-10 bg-opacity-10"
-                    style={{
-                      height: "135px",
-                      width: "43px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      borderRadius: "5px",
-                      background: "linear-gradient(to bottom,white, #5D5FEF)",
-                      opacity: 0.3,
-                    }}
-                  />
+                {/* Fixed Overlay Tags positioned dynamically */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {chartData.map((item, index) => {
+                    if (!item.hasData || item.actualMinutes === 0) return null;
 
-                  {/* Highlighted Bar Section */}
-                  <div
-                    className="absolute w-10 bg-opacity-20"
-                    style={{
-                      height: "100px",
-                      bottom: "0",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      borderRadius: "5px",
-                      background: "linear-gradient(to bottom, #5D5FEF)",
-                      opacity: 0.8,
-                    }}
-                  />
+                    const position = calculateOverlayPosition(index);
 
-                  {/* Overlay Tag */}
-                  <div
-                    className="bg-white rounded-lg px-4 py-2 z-50"
-                    style={{
-                      top: "50px",
-                      transform: "translateX(0%)",
-                      zIndex: 20, // Ensures it's on top
-                    }}
-                  >
-                    <div className="text-[#5D5FEF] text-[13.66px] font-semibold">
-                      2h 15m
-                    </div>
-                    <div className="text-gray-500 text-[9.76px]">Average</div>
-                  </div>
+                    return (
+                      <div
+                        key={`overlay-${index}`}
+                        className="absolute bg-white rounded-lg px-3 py-2 shadow-lg border border-gray-200 transition-all duration-200"
+                        style={{
+                          top: "35%",
+                          ...position,
+                          zIndex: 20,
+                          minWidth: "60px",
+                          textAlign: "center",
+                        }}
+                      >
+                        <div className="text-[#5D5FEF] text-[13.66px] font-semibold">
+                          {formatOverlayTime(item.actualMinutes)}{" "}
+                          {/* Use formatOverlayTime instead */}
+                        </div>
+                        <div className="text-gray-500 text-[9.76px]">
+                          Average
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
+
             {/* Profile Clicks */}
             <div className="lg:col-span-4 bg-white p-4 md:p-6 rounded-xl border border-blue-600 h-auto md:h-[386px]">
               <div className="mb-4">
@@ -449,9 +897,7 @@ export default function LawyerStatsDashboard() {
               {/* Header Section */}
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <div>
-                  <p className="text-[#718096] text-[13.66px]">
-                    Bounce Rate
-                  </p>
+                  <p className="text-[#718096] text-[13.66px]">Bounce Rate</p>
                   <div className="flex items-center gap-1 sm:gap-2 mt-1">
                     <h2 className="text-[23px] font-bold text-gray-900">
                       {getBounceRateValue()}
@@ -475,7 +921,7 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-               <div className="flex justify-end items-end mt-2 sm:mt-0">
+                <div className="flex justify-end items-end mt-2 sm:mt-0">
                   <div className="flex items-center ml-0 sm:ml-6 text-[#111827] text-[11px] border border-gray-200 px-2 py-2 rounded">
                     Last 7 Days
                     <Calendar className="w-4 h-4 ml-1 text-gray-400" />
@@ -517,7 +963,7 @@ export default function LawyerStatsDashboard() {
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <h2 className="text-[23px] font-bold text-gray-900">
-                      2h 15m
+                      {formatMinutesToHourMinute(getAverageDelayMinutes())}
                     </h2>
                     <div className="flex items-center px-2 py-1 bg-[#5D5FEF] text-white text-xs rounded-full">
                       <svg
@@ -546,12 +992,27 @@ export default function LawyerStatsDashboard() {
                 </div>
               </div>
 
-              <div className="w-full h-[200px] md:h-[283px] relative">
+              <div
+                ref={chartRef}
+                className="w-full h-[200px] md:h-[283px] relative"
+              >
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={responseTimeData}
-                    margin={{ top: 20, right: 20, left: -20, bottom: 20 }}
+                  <ComposedChart
+                    data={delayChartData}
+                    margin={{ top: 30, right: 30, left: -30, bottom: 20 }}
                   >
+                    <defs>
+                      <linearGradient
+                        id="barGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop offset="0%" stopColor="#5D5FEF" />
+                        <stop offset="100%" stopColor="#FFFFFF" />
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid
                       vertical={false}
                       stroke="#f0f0f0"
@@ -564,13 +1025,30 @@ export default function LawyerStatsDashboard() {
                       tick={{ fill: "#718096", fontSize: 13.66 }}
                     />
                     <YAxis
-                      domain={[0, 5]}
-                      ticks={[1, 2, 3, 4, 5]}
+                      domain={getYAxisDomaindelay(delayChartData)}
+                      ticks={getYAxisTicksdelay(delayChartData)}
                       tickFormatter={(value) => `${value}h`}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: "#718096", fontSize: 13.66 }}
                     />
+                    {/* Add dotted lines in the center of bars */}
+                    <DottedLines
+                      data={delayChartData}
+                      chartWidth={400} // Adjust based on your chart size
+                      chartHeight={283} // Adjust based on your chart size
+                      margin={{ top: 30, right: 30, left: -30, bottom: 20 }}
+                      tick={{ fill: "#FFFFFF", fontSize: 13.66 }}
+                    />
+                    {/* Bar Chart with custom bars */}
+                    <Bar
+                      dataKey="value"
+                      fill="url(#barGradient)"
+                      radius={[4, 4, 0, 0]}
+                      barSize={40}
+                      shape={<CustomBardelay />}
+                    />
+                    {/* Line Chart */}
                     <Line
                       type="monotone"
                       dataKey="value"
@@ -584,78 +1062,49 @@ export default function LawyerStatsDashboard() {
                         strokeWidth: 2.44,
                       }}
                     />
-                  </LineChart>
+                    <ReferenceLine
+                      x="Wed" // or whatever day you want the line on
+                      stroke="#FFFFFF"
+                      strokeWidth="2"
+                      strokeDasharray="4,4"
+                      opacity="0.8"
+                    />
+                  </ComposedChart>
                 </ResponsiveContainer>
 
-                {/* Wednesday Highlight - hidden on small screens */}
-                <div
-                  className="absolute hidden md:block"
-                  style={{
-                    top: "25%",
-                    left: "55%",
-                    transform: "translate(-50%, -50%)",
-                  }}
-                >
-                  {/* Dotted Line */}
-                  <div
-                    className="absolute w-0 border-l-2 border-dashed z-50"
-                    style={{
-                      height: "195px",
-                      width: "42px",
-                      left: "49%",
-                      top: "-9px",
-                      transform: "translateX(-50%)",
-                      borderColor: "#FFFFFF",
-                    }}
-                  />
+                {/* Fixed Overlay Tags positioned dynamically */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {delayChartData.map((item, index) => {
+                    if (!item.hasData || item.actualMinutes === 0) return null;
 
-                  {/* Bar Background */}
-                  <div
-                    className="absolute w-10 bg-[#5D5FEF] bg-opacity-10"
-                    style={{
-                      height: "189px",
-                      width: "42px",
-                      left: "25%",
-                      transform: "translateX(-50%)",
-                      borderRadius: "5px",
-                      background: "linear-gradient(to top,white, #5D5FEF)",
-                      opacity: 0.9,
-                    }}
-                  />
+                    const position = calculateOverlayPosition(index);
 
-                  <div
-                    className="absolute w-10 bg-[#5D5FEF] bg-opacity-10"
-                    style={{
-                      height: "100px",
-                      bottom: "0",
-                      left: "25%",
-                      transform: "translateX(-50%)",
-                      borderRadius: "5px",
-                      background: "linear-gradient(to bottom,white #5D5FEF)",
-                      opacity: 0.9,
-                    }}
-                  />
-
-                  {/* Overlay Tag */}
-                  <div
-                    className="bg-white rounded-lg px-4 py-2 z-20"
-                    style={{
-                      top: "40px",
-                      transform: "translateX(-20%)",
-                      zIndex: 20, // Ensures it's on top
-                      left: "40px",
-                    }}
-                  >
-                    <div className="text-[#5D5FEF] text-[13.66px] font-semibold z-20">
-                      2h 15m
-                    </div>
-                    <div className="text-gray-500 text-[9.76px]">Average</div>
-                  </div>
+                    return (
+                      <div
+                        key={`overlay-${index}`}
+                        className="absolute bg-white rounded-lg px-3 py-2 shadow-lg border border-gray-200 transition-all duration-200"
+                        style={{
+                          top: "35%",
+                          ...position,
+                          zIndex: 20,
+                          minWidth: "60px",
+                          textAlign: "center",
+                        }}
+                      >
+                        <div className="text-[#5D5FEF] text-[13.66px] font-semibold">
+                          {formatOverlayTime(item.actualMinutes)}{" "}
+                          {/* Use formatOverlayTime instead */}
+                        </div>
+                        <div className="text-gray-500 text-[9.76px]">
+                          Average
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
-
           {/* Third Row */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
             {/* Average Time by Day - 8 columns */}
@@ -668,9 +1117,9 @@ export default function LawyerStatsDashboard() {
                     </h3>
                     <div className="flex items-center mt-2">
                       <p className="text-[23px] font-bold text-gray-800">
-                        2h 15m
+                        {getSearchCount()}
                       </p>
-                      <div className="flex items-center px-2 py-1 bg-[#5D5FEF] text-white text-xs rounded-full">
+                      <div className="flex items-center m-2 px-2 py-1 bg-[#5D5FEF] text-white text-xs rounded-full">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -696,7 +1145,6 @@ export default function LawyerStatsDashboard() {
                     </div>
                   </div>
                 </div>
-
                 <div className="space-y-3 mt-5">
                   {weekdayLeadTimeData.map((day) => (
                     <div key={day.name} className="flex items-center gap-2">
@@ -707,21 +1155,36 @@ export default function LawyerStatsDashboard() {
                         <div
                           className="absolute h-[21px] bg-[#5D5FEF] rounded-md"
                           style={{
-                            width: `${(day.value / maxValue) * 100}%`,
+                            // Fixed: use maxValues (the actual max) instead of maxValues
+                            width: `${Math.max(
+                              (day.value / maxValues) * 100,
+                              0
+                            )}%`,
+                            minWidth: day.value > 0 ? "2px" : "0px", // Show minimum bar for non-zero values
                           }}
                         ></div>
                       </div>
                     </div>
                   ))}
                 </div>
-
                 <div className="flex justify-between mt-4 text-xs text-gray-600 px-2 md:px-8">
-                  <span>0</span>
-                  <span className="hidden sm:inline">100</span>
-                  <span>200</span>
-                  <span className="hidden sm:inline">300</span>
-                  <span>400</span>
-                  <span>500</span>
+                  {(() => {
+                    const steps =
+                      maxValues <= 10
+                        ? maxValues
+                        : maxValues <= 50
+                        ? 5
+                        : maxValues <= 100
+                        ? 4
+                        : 5;
+                    const stepSize = maxValues / steps;
+
+                    return Array.from({ length: steps + 1 }, (_, i) => (
+                      <span key={i} className="hidden sm:inline">
+                        {Math.round(i * stepSize)}
+                      </span>
+                    ));
+                  })()}
                 </div>
               </div>
             </div>
@@ -841,18 +1304,3 @@ export default function LawyerStatsDashboard() {
     </div>
   );
 }
-// Helper component for the dot at specific point
-const ReferenceDot = ({ x, y, r, fill, stroke, strokeWidth }) => {
-  return (
-    <svg>
-      <circle
-        cx={x}
-        cy={y}
-        r={r}
-        fill={fill}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-      />
-    </svg>
-  );
-};
