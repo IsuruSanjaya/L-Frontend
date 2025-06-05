@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base API URL
-const BASE_URL = "https://versio-loadb-qesz1pqs1m59-160250739.ap-southeast-1.elb.amazonaws.com/api";
+const BASE_URL = "https://ai-lawyers-lawggle.thematchbot.com/api";
 
 // Get statistics by lawyer ID
 export const getStatistics = async (lawyerId) => {
