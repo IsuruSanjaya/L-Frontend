@@ -1,16 +1,10 @@
+// src/api.js
 import axios from "axios";
-import { useState, useEffect, useRef, useLocation } from "react";
 
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
 // Base API URL
 const BASE_URL = "https://ai-lawyers-lawggle.thematchbot.com/api";
 
-  const lawyerId = query.get("lawyerId");
-
-// Get statistics by lawyer ID
+// ✅ Get statistics by lawyer ID
 export const getStatistics = async (lawyerId) => {
   try {
     const response = await axios.get(`${BASE_URL}/statistics/${lawyerId}`);
@@ -21,7 +15,7 @@ export const getStatistics = async (lawyerId) => {
   }
 };
 
-// Get conversations by lawyer ID
+// ✅ Get conversations by lawyer ID
 export const getConversations = async (lawyerId) => {
   try {
     const response = await axios.get(`${BASE_URL}/conversation/conversations`, {
