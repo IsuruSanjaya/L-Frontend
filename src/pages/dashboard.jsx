@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useLocation } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   LineChart,
   Line,
@@ -18,9 +18,6 @@ import { getStatistics, getConversations } from "../services/api/api"; // Adjust
 import { useLawyerId } from "../hooks/useLawyerId";
 
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
 export default function LawyerStatsDashboard() {
   const [value, setValue] = useState(80);
   const [data, setData] = useState(null);
@@ -33,7 +30,6 @@ export default function LawyerStatsDashboard() {
   const [delayTimeData, setDelayTimeData] = useState([]); // New state for delay data
   const [weekdayLeadTimeData, setWeekdayLeadTimeData] = useState([]);
   const [maxValues, setMaxValue] = useState(1);
-  const query = useQuery();
   const lawyerId = useLawyerId();
 
   const [totalViews, setTotalViews] = useState(400);
