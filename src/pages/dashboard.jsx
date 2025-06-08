@@ -15,6 +15,9 @@ import {
 import { Clock, Calendar } from "lucide-react";
 import { ArrowUp } from "lucide-react";
 import { getStatistics, getConversations } from "../services/api/api"; // Adjust path as needed
+import { useLawyerId } from "../hooks/useLawyerId";
+
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -31,7 +34,7 @@ export default function LawyerStatsDashboard() {
   const [weekdayLeadTimeData, setWeekdayLeadTimeData] = useState([]);
   const [maxValues, setMaxValue] = useState(1);
   const query = useQuery();
-  const lawyerId = query.get("lawyerId");
+  const lawyerId = useLawyerId();
 
   const [totalViews, setTotalViews] = useState(400);
   const maxValue = 500;
