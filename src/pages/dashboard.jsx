@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLocation } from "react";
 import {
   LineChart,
   Line,
@@ -15,19 +15,23 @@ import {
 import { Clock, Calendar } from "lucide-react";
 import { ArrowUp } from "lucide-react";
 import { getStatistics, getConversations } from "../services/api/api"; // Adjust path as needed
-
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 export default function LawyerStatsDashboard() {
   const [value, setValue] = useState(80);
   const [data, setData] = useState(null);
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [responseTimeData, setResponseTimeData] = useState([]);
-  const lawyerId = "f8e94d08-a968-4987-a840-2e97bef9c803";
+  // const lawyerId = "f8e94d08-a968-4987-a840-2e97bef9c803";
   const [chartData, setChartData] = useState([]); // Fixed: using chartData instead of chartDataa
   const [delayChartData, setDelayChartData] = useState([]); // New state for delay chart data
   const [delayTimeData, setDelayTimeData] = useState([]); // New state for delay data
   const [weekdayLeadTimeData, setWeekdayLeadTimeData] = useState([]);
   const [maxValues, setMaxValue] = useState(1);
+  const query = useQuery();
+  const lawyerId = query.get("lawyerId");
 
   const [totalViews, setTotalViews] = useState(400);
   const maxValue = 500;
