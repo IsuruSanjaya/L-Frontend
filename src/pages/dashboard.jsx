@@ -17,7 +17,6 @@ import { ArrowUp } from "lucide-react";
 import { getStatistics, getConversations } from "../services/api/api"; // Adjust path as needed
 import { useLawyerId } from "../hooks/useLawyerId";
 
-
 export default function LawyerStatsDashboard() {
   const [value, setValue] = useState(80);
   const [data, setData] = useState(null);
@@ -30,7 +29,8 @@ export default function LawyerStatsDashboard() {
   const [delayTimeData, setDelayTimeData] = useState([]); // New state for delay data
   const [weekdayLeadTimeData, setWeekdayLeadTimeData] = useState([]);
   const [maxValues, setMaxValue] = useState(1);
-  const lawyerId = useLawyerId();
+  // const lawyerId = useLawyerId();
+  const [lawyerId, setLawyerId] = useState(null);
 
   const [totalViews, setTotalViews] = useState(400);
   const maxValue = 500;
@@ -81,6 +81,29 @@ export default function LawyerStatsDashboard() {
   }, [chartData]); // Added chartData dependency to update when data changes
 
   useEffect(() => {
+    function receiveMessage(event) {
+      // IMPORTANT: check origin for security
+      if (
+        event.origin !==
+        "https://lawggle-b065c1-7854620dcb65bd8d14aa462e.webflow.io"
+      )
+        return;
+
+      const data = event.data;
+      if (data.lawyerId) {
+        setLawyerId(data.lawyerId);
+        console.log("✅ Received lawyerId from parent:", data.lawyerId);
+      }
+    }
+
+    window.addEventListener("message", receiveMessage);
+
+    return () => window.removeEventListener("message", receiveMessage);
+  }, []);
+
+  useEffect(() => {
+    if (!lawyerId) return;
+
     const fetchData = async () => {
       try {
         setLoading(true);
