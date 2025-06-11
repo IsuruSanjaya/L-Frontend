@@ -108,7 +108,20 @@ export default function LawyerStatsDashboard() {
       try {
         setLoading(true);
         const statsData = await getStatistics(lawyerId);
-        const convData = await getConversations(lawyerId);
+        // const convData = await getConversations(lawyerId);
+
+        let convData = null;
+        try {
+          convData = await getConversations(lawyerId);
+        } catch (convError) {
+          console.warn("No conversation data available:", convError);
+          convData = {
+            conversations: {
+              daily_response_stats: [],
+              average_delay_stats: [],
+            },
+          };
+        }
 
         setData(statsData);
         setConversations(convData);

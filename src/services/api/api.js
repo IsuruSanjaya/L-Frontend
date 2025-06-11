@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Base API URL
 const BASE_URL = "https://ai-lawyers-lawggle.thematchbot.com/api";
-
+// const lawyer_id="mem_sb_cmbeqblfw02s80xnx6k4s9psw"
 
 
 // ✅ Get statistics by lawyer ID
