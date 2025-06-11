@@ -21,7 +21,7 @@ export const getStatistics = async (lawyerId) => {
 export const getConversations = async (lawyerId) => {
   try {
     const response = await axios.get(`${BASE_URL}/conversation/conversations`, {
-      params: { lawyer_id: lawyerId },
+      params: { memberstackid: lawyerId },
     });
     return response.data;
   } catch (error) {

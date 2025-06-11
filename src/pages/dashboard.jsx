@@ -103,12 +103,17 @@ export default function LawyerStatsDashboard() {
 
   useEffect(() => {
     if (!lawyerId) return;
+    console.log("👀 useEffect triggered with lawyerId:", lawyerId); // Check trigger
 
     const fetchData = async () => {
+      console.log("📡 Fetching data...");
+
       try {
         setLoading(true);
         // const statsData = await getStatistics(lawyerId);
         // const convData = await getConversations(lawyerId);
+        // console.log("✅ Stats Data:", statsData);
+        // console.log("✅ Conversations Data:", convData);
 
         let statsData = null;
         try {
@@ -119,6 +124,8 @@ export default function LawyerStatsDashboard() {
             searchresultdailyStats: [],
           };
         }
+
+        console.log("data", getStatistics)
 
         let convData = null;
         try {
@@ -137,8 +144,8 @@ export default function LawyerStatsDashboard() {
         setConversations(convData);
         const searchStats = statsData.searchresultdailyStats || [];
 
-        const dailyStats = convData.conversations?.daily_response_stats || [];
-        const delayStats = convData.conversations?.average_delay_stats || [];
+        const dailyStats = convData.daily_response_stats || [];
+        const delayStats = convData.average_delay_stats || [];
 
         console.log("Daily Response Stats:", dailyStats);
         console.log("Delay Stats:", delayStats);
