@@ -125,7 +125,7 @@ export default function LawyerStatsDashboard() {
           };
         }
 
-        console.log("data", getStatistics)
+        console.log("data", getStatistics);
 
         let convData = null;
         try {
@@ -326,21 +326,39 @@ export default function LawyerStatsDashboard() {
     return ticks;
   };
 
-  // Custom bar component with hover functionality
-  const CustomBar = (props) => {
+  // Alternative approach using a custom Bar component with built-in dotted line
+  const CustomBarWithDottedLine = (props) => {
     const { fill, x, y, width, height, payload, index } = props;
 
     return (
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        fill={payload.hasData ? fill : "#f3f4f6"}
-        rx={4}
-        ry={4}
-        style={{ cursor: "pointer" }}
-      />
+      <g>
+        {/* The bar itself */}
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          fill={payload.hasData ? fill : "#f3f4f6"}
+          rx={4}
+          ry={4}
+          style={{ cursor: "pointer" }}
+        />
+
+        {/* Dotted line in the center of the bar - only if has data */}
+        {payload.hasData && (
+          <line
+            x1={x + width / 2}
+            y1={y}
+            x2={x + width / 2}
+            y2={y + height}
+            stroke="#FFFFFF"
+            strokeWidth="2"
+            strokeDasharray="4,4"
+            opacity="0.8"
+            style={{ pointerEvents: "none" }}
+          />
+        )}
+      </g>
     );
   };
   // Calculate overlay positions for bars
@@ -453,40 +471,41 @@ export default function LawyerStatsDashboard() {
       return `${minutes.toFixed(1)}m`;
     }
   };
-  // Add this custom component for rendering dotted lines
-  const DottedLines = ({ data, chartWidth, chartHeight, margin }) => {
-    if (!data || data.length === 0) return null;
 
-    const barCount = data.length;
-    const availableWidth = chartWidth - margin.left - margin.right;
-    const barSpacing = availableWidth / barCount;
+  // Updated DottedLines component that works with ResponsiveContainer
+  const DottedLines = ({ data }) => {
+    if (!data || data.length === 0) return null;
 
     return (
       <g>
         {data.map((item, index) => {
           if (!item.hasData) return null;
 
-          // Calculate the center position of each bar
-          const barCenterX = margin.left + barSpacing * index + barSpacing / 2;
+          // Calculate the X position for each bar
+          // This uses the same spacing logic as Recharts internally
+          const barCount = data.length;
+          const chartWidth = 100; // Use percentage-based positioning
+          const barSpacing = chartWidth / barCount;
+          const barCenterX = barSpacing * index + barSpacing / 2;
 
           return (
             <line
               key={`dotted-line-${index}`}
-              x1={barCenterX}
-              y1={margin.top}
-              x2={barCenterX}
-              y2={chartHeight - margin.bottom}
+              x1={`${barCenterX}%`}
+              y1="0%"
+              x2={`${barCenterX}%`}
+              y2="100%"
               stroke="#FFFFFF"
               strokeWidth="2"
               strokeDasharray="4,4"
               opacity="0.8"
+              style={{ pointerEvents: "none" }}
             />
           );
         })}
       </g>
     );
   };
-
   //averag lead message
   // Calculate dynamic Y-axis domain
   const getYAxisDomaindelay = (data) => {
@@ -815,7 +834,7 @@ export default function LawyerStatsDashboard() {
                       fill="url(#barGradient)"
                       radius={[4, 4, 0, 0]}
                       barSize={40}
-                      shape={<CustomBar />}
+                      shape={<CustomBarWithDottedLine />}
                     />
                     {/* Line Chart */}
                     <Line
