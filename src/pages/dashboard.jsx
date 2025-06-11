@@ -107,8 +107,18 @@ export default function LawyerStatsDashboard() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const statsData = await getStatistics(lawyerId);
+        // const statsData = await getStatistics(lawyerId);
         // const convData = await getConversations(lawyerId);
+
+        let statsData = null;
+        try {
+          statsData = await getStatistics(lawyerId);
+        } catch (statsError) {
+          console.warn("No statistics data available:", statsError);
+          statsData = {
+            searchresultdailyStats: [],
+          };
+        }
 
         let convData = null;
         try {
