@@ -744,7 +744,7 @@ export default function LawyerStatsDashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             {/* Average Response Time */}
-            <div className="lg:col-span-8 bg-white rounded-2xl p-4 md:p-6 h-auto md:h-[386px] relative border border-blue-600">
+            <div className="lg:col-span-8 bg-white rounded-2xl p-4 md:p-6 h-auto md:h-[386px] relative border border-[#5D5FEF]">
               <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-start mb-6">
                 <div>
                   <p className="text-[#718096] text-[13.66px]">
@@ -894,7 +894,7 @@ export default function LawyerStatsDashboard() {
             </div>
 
             {/* Profile Clicks */}
-            <div className="lg:col-span-4 bg-white p-4 md:p-6 rounded-xl border border-blue-600 h-auto md:h-[386px]">
+            <div className="lg:col-span-4 bg-white p-4 md:p-6 rounded-xl border border-[#5D5FEF] h-auto md:h-[386px]">
               <div className="mb-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 sm:items-center sm:justify-between">
                   <div>
@@ -968,7 +968,7 @@ export default function LawyerStatsDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
             {/* Bounce Rate - 4 columns */}
             {/* Fully responsive Bounce Rate Card with mobile-first approach */}
-            <div className="lg:col-span-4 bg-white p-5 md:p-5 rounded-xl border border-blue-800 h-auto md:h-[386px] font-sans">
+            <div className="lg:col-span-4 bg-white p-5 md:p-5 rounded-xl border border-[#5D5FEF] h-auto md:h-[386px] font-sans">
               {/* Header Section */}
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <div>
@@ -1030,7 +1030,7 @@ export default function LawyerStatsDashboard() {
             </div>
 
             {/* Average Time from Lead Arrival to First Message */}
-            <div className="lg:col-span-8 bg-white rounded-2xl p-4 md:p-6 h-auto md:h-[386px] relative border border-blue-600">
+            <div className="lg:col-span-8 bg-white rounded-2xl p-4 md:p-6 h-auto md:h-[386px] relative border border-[#5D5FEF]">
               <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-start mb-4">
                 <div>
                   <p className="text-[#718096] text-[13.66px]">
@@ -1183,7 +1183,7 @@ export default function LawyerStatsDashboard() {
           {/* Third Row */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
             {/* Average Time by Day - 8 columns */}
-            <div className="lg:col-span-8 p-4 md:p-6 pt-4 rounded-xl bg-white border border-blue-800 h-auto md:h-[386px]">
+            <div className="lg:col-span-8 p-4 md:p-6 pt-4 rounded-xl bg-white border border-[#5D5FEF] h-auto md:h-[386px]">
               <div className="p-2">
                 <div className="grid grid-cols-1 sm:grid-cols-2 sm:justify-between sm:items-center mb-4">
                   <div>
@@ -1265,7 +1265,7 @@ export default function LawyerStatsDashboard() {
             </div>
 
             {/* Profile View to Chat Conversion Rate */}
-            <div className="lg:col-span-4 bg-white p-4 md:p-6 pt-5 rounded-xl border border-blue-800 h-auto md:h-[386px] font-sans">
+            <div className="lg:col-span-4 bg-white p-4 md:p-6 pt-5 rounded-xl border border-[#5D5FEF] h-auto md:h-[386px] font-sans">
               <div className="grid grid-cols-1 sm:grid-cols-1 sm:justify-between sm:items-center mb-2">
                 <p className="text-[#718096] text-[13.66px]">
                   Profile View to Chat Conversion Rate
@@ -1345,7 +1345,7 @@ export default function LawyerStatsDashboard() {
           </div>
 
           {/* Last Blog Published - Responsive width */}
-          <div className="bg-white p-4 md:p-6 mt-4 rounded-lg border border-blue-800 w-full md:w-[377px] h-auto md:h-[106px]">
+          <div className="bg-white p-4 md:p-6 mt-4 rounded-lg border border-[#5D5FEF] w-full md:w-[377px] h-auto md:h-[106px]">
             <div>
               <p className="text-[#718096] text-[13.66px]">
                 Last Blog Published
