@@ -56,8 +56,8 @@ export default function LawyerStatsDashboard() {
   const maxViews = Math.ceil(views / 100) * 100 || baseMaxViews;
   const radiusprofile = 80;
 
-  const minAngle = -120; // start angle of gauge
-  const maxAngle = 115; // end angle of gauge
+  const minAngle = -125; // start angle of gauge
+  const maxAngle = 125; // end angle of gauge
   const angles = minAngle + (views / maxViews) * (maxAngle - minAngle);
   const radians = ((angles - 90) * Math.PI) / 180;
   const xprofile = Math.cos(radians) * radiusprofile;
@@ -715,7 +715,7 @@ export default function LawyerStatsDashboard() {
       <path
         d={`M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`}
         stroke={color}
-        strokeWidth="12"
+        strokeWidth="20"
         fill="none"
       />
     );
@@ -1297,8 +1297,8 @@ export default function LawyerStatsDashboard() {
               <div className="relative w-full">
                 <svg
                   width="100%"
-                  height="255px"
-                  viewBox="-100 -90 200 120"
+                  height="355px"
+                  viewBox="-100 -90 190 180"
                   className="mx-auto"
                 >
                   {/* Background arc in light color */}
@@ -1317,7 +1317,7 @@ export default function LawyerStatsDashboard() {
                     strokeWidth="3"
                     strokeLinecap="round"
                   />
-                  <circle cx="0" cy="0" r="4" fill="#1F2937" />
+                  <circle cx="0" cy="0" r="5" fill="#1F2937" />
 
                   {/* Central value */}
                   <text
